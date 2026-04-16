@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion Clinique - PA & BPO</title>
+    <title>Gestion Clinique - Multi-Génération</title>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://unpkg.com/downloadjs@1.4.7/download.js"></script>
     <style>
@@ -25,15 +25,17 @@
         .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
         .check-item { display: flex; align-items: center; font-size: 0.85em; gap: 5px; cursor: pointer; }
 
-        .selector-box { background: #e3f2fd; padding: 20px; border-radius: 8px; border: 2px solid var(--blue); margin-top: 20px; text-align: center; }
-        .btn { background: var(--green); color: white; padding: 15px 40px; border: none; border-radius: 50px; font-size: 1.1em; cursor: pointer; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 10px rgba(39,174,96,0.3); }
-        .btn:hover { background: #219150; transform: scale(1.02); }
+        .selector-box { background: #fff3e0; padding: 25px; border-radius: 8px; border: 2px solid #ff9800; margin-top: 20px; text-align: center; }
+        .btn-main { background: #e67e22; color: white; padding: 20px 50px; border: none; border-radius: 50px; font-size: 1.2em; cursor: pointer; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 15px rgba(230,126,34,0.4); }
+        .btn-main:hover { background: #d35400; transform: translateY(-2px); }
+        
+        .doc-choice { display: inline-block; margin: 10px 20px; font-size: 1.1em; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🏥 Système de Gestion Chirurgicale</h1>
+    <h1>🏥 Impression de Dossiers Médicaux</h1>
 
     <div class="section">
         <div class="section-title">1. Identification du Patient</div>
@@ -68,130 +70,116 @@
     </div>
 
     <div class="section">
-        <div class="section-title">3. Données de l'Intervention</div>
+        <div class="section-title">3. Détails Médicaux</div>
         <div class="field full"><label>Motif de consultation</label><textarea id="motif"></textarea></div>
         <div class="field full"><label>Diagnostic retenu</label><textarea id="diag"></textarea></div>
         <div class="field full"><label>Intervention programmée</label><textarea id="interv"></textarea></div>
         <div class="field"><label>Type d'admission</label>
             <select id="urgence"><option value="a froid">A FROID</option><option value="en urgence">EN URGENCE</option></select>
         </div>
-        <div class="field half"><label>Médecin Responsable</label><input type="text" id="medecin"></div>
+        <div class="field half"><label>Nom du Médecin</label><input type="text" id="medecin"></div>
     </div>
 
     <div class="selector-box">
-        <h3 style="margin-top:0; color:var(--blue)">CHOIX DU DOCUMENT À GÉNÉRER</h3>
-        <div style="margin-bottom: 20px;">
-            <label style="margin-right:20px; font-weight:bold; cursor:pointer">
-                <input type="radio" name="docType" value="PA" checked> Proposition d'Admission (PA)
-            </label>
-            <label style="font-weight:bold; cursor:pointer">
-                <input type="radio" name="docType" value="BPO"> Bilan Pré-Opératoire (BPO)
-            </label>
+        <h3 style="margin-top:0; color:#d35400">DOCUMENTS À GÉNÉRER</h3>
+        <div>
+            <label class="doc-choice"><input type="checkbox" id="checkPA" checked> Formulaire PA</label>
+            <label class="doc-choice"><input type="checkbox" id="checkBPO" checked> Bilan BPO</label>
         </div>
-        <button class="btn" onclick="traiterDocument()">GÉNÉRER LE DOCUMENT SELECTIONNÉ</button>
+        <p style="font-size: 0.85em; color: #666;">(Les documents cochés seront téléchargés simultanément)</p>
+        <button class="btn-main" onclick="genererTousLesDocuments()">🚀 GÉNÉRER LES DOCUMENTS</button>
     </div>
 </div>
 
 <script>
     const { PDFDocument, rgb } = PDFLib;
 
-    async function traiterDocument() {
-        const type = document.querySelector('input[name="docType"]:checked').value;
-        if(type === "PA") {
-            await genererPA();
-        } else if(type === "BPO") {
-            await genererBPO();
+    async function genererTousLesDocuments() {
+        const fairePA = document.getElementById('checkPA').checked;
+        const faireBPO = document.getElementById('checkBPO').checked;
+
+        if (!fairePA && !faireBPO) {
+            alert("Veuillez cocher au moins un document.");
+            return;
         }
+
+        if (fairePA) await genererPA();
+        if (faireBPO) await genererBPO();
     }
 
-    // --- FORMULAIRE PA ---
+    // --- LOGIQUE COMMUNE : Y PUR (0 = BAS) ---
+    function drawDirect(page, text, x, y, size = 10) {
+        if(!text) return;
+        page.drawText(text.toString().toUpperCase(), {
+            x: x,
+            y: y, // Utilisation directe sans height - y
+            size: size,
+            color: rgb(0,0,0)
+        });
+    }
+
     async function genererPA() {
         const val = (id) => document.getElementById(id).value.trim().toUpperCase();
-        const data = {
-            nom: val('nom'), prenom: val('prenom'), age: val('age'), tel: val('tel'),
-            adresse: val('adresse'), regime: document.getElementById('regime').value,
-            regime_autre: val('regime_autre'), motif: val('motif'), diag: val('diag'),
-            interv: val('interv'), urgence: document.getElementById('urgence').value,
-            medecin: val('medecin'), date: new Date().toLocaleDateString('fr-FR')
-        };
-
         try {
             const bytes = await fetch('PA.pdf').then(res => res.arrayBuffer());
             const pdfDoc = await PDFDocument.load(bytes);
             const page = pdfDoc.getPages()[0];
-            const { height } = page.getSize();
 
-            const draw = (text, x, y, size = 10) => {
-                if(text) page.drawText(text.toString().toUpperCase(), { x, y: height - y, size, color: rgb(0,0,0) });
-            };
+            const d = (t, x, y, s) => drawDirect(page, t, x, y, s);
+            const dateStr = new Date().toLocaleDateString('fr-FR');
 
-            draw(data.date, 441, 688);
-            draw(data.nom, 195, 624);
-            draw(data.prenom, 213, 593);
-            draw(data.age, 195, 561); draw(data.tel, 420, 561);
-            draw(data.adresse, 215, 530);
+            d(dateStr, 441, 688);
+            d(val('nom'), 195, 624);
+            d(val('prenom'), 213, 593);
+            d(val('age'), 195, 561); d(val('tel'), 420, 561);
+            d(val('adresse'), 215, 530);
 
             const regPos = { "M": 218, "FM": 253, "RM": 293, "SS": 335, "CP": 372 };
-            if (regPos[data.regime]) draw("X", regPos[data.regime], 495, 12);
-            else if (data.regime === "Autre") draw(data.regime_autre, 459, 498);
+            const regime = document.getElementById('regime').value;
+            if (regPos[regime]) d("X", regPos[regime], 495, 12);
+            else if (regime === "Autre") d(val('regime_autre'), 459, 498);
 
             const longT = (t, x1, y1, x2, y2) => {
                 if(!t) return;
-                if(t.length <= 55) draw(t, x1, y1);
-                else { draw(t.substring(0,55), x1, y1); draw(t.substring(55, 110), x2, y2); }
+                if(t.length <= 55) d(t, x1, y1);
+                else { d(t.substring(0,55), x1, y1); d(t.substring(55, 110), x2, y2); }
             };
-            longT(data.motif, 279, 465, 160, 434);
-            longT(data.diag, 259, 402, 160, 369);
-            longT(data.interv, 301, 339, 160, 307);
+            longT(val('motif'), 279, 465, 160, 434);
+            longT(val('diag'), 259, 402, 160, 369);
+            longT(val('interv'), 301, 339, 160, 307);
 
-            if (data.urgence === "en urgence") draw("X", 352, 241, 12);
-            else draw("X", 447, 242, 12);
+            if (document.getElementById('urgence').value === "en urgence") d("X", 352, 241, 12);
+            else d("X", 447, 242, 12);
 
-            draw(data.medecin, 392, 129);
+            d(val('medecin'), 392, 129);
 
             const result = await pdfDoc.save();
-            download(result, `PA_${data.nom}.pdf`, "application/pdf");
-        } catch (e) { alert("Erreur PA.pdf : " + e.message); }
+            download(result, `PA_${val('nom')}.pdf`, "application/pdf");
+        } catch (e) { console.error(e); }
     }
 
-    // --- FORMULAIRE BPO ---
     async function genererBPO() {
         const val = (id) => document.getElementById(id).value.trim().toUpperCase();
-        const data = {
-            nomPrenom: val('prenom') + " " + val('nom'),
-            medecin: val('medecin'),
-            date: new Date().toLocaleDateString('fr-FR')
-        };
-
         try {
             const bytes = await fetch('BPO.pdf').then(res => res.arrayBuffer());
             const pdfDoc = await PDFDocument.load(bytes);
             const page = pdfDoc.getPages()[0];
-            const { height } = page.getSize();
 
-            // Utilisation de height - y pour correspondre à vos coordonnées d'outil en ligne
-            const draw = (text, x, y, size = 10) => {
-                if(text) page.drawText(text.toString().toUpperCase(), { x, y: height - y, size, color: rgb(0,0,0) });
-            };
+            const d = (t, x, y, s) => drawDirect(page, t, x, y, s);
+            const dateStr = new Date().toLocaleDateString('fr-FR');
+            const patient = val('prenom') + " " + val('nom');
+            const med = val('medecin');
 
-            // Écriture de la Date (3 zones)
-            draw(data.date, 231, 470);
-            draw(data.date, 484, 470);
-            draw(data.date, 751, 470);
-
-            // Écriture Nom/Prénom (3 zones)
-            draw(data.nomPrenom, 70, 295);
-            draw(data.nomPrenom, 341, 295);
-            draw(data.nomPrenom, 615, 294);
-
-            // Écriture Médecin (3 zones)
-            draw(data.medecin, 131, 89);
-            draw(data.medecin, 345, 89);
-            draw(data.medecin, 577, 87);
+            // Date (3 zones)
+            d(dateStr, 231, 470); d(dateStr, 484, 470); d(dateStr, 751, 470);
+            // Patient (3 zones)
+            d(patient, 70, 295); d(patient, 341, 295); d(patient, 615, 294);
+            // Médecin (3 zones)
+            d(med, 131, 89); d(med, 345, 89); d(med, 577, 87);
 
             const result = await pdfDoc.save();
             download(result, `BPO_${val('nom')}.pdf`, "application/pdf");
-        } catch (e) { alert("Erreur BPO.pdf : " + e.message); }
+        } catch (e) { console.error(e); }
     }
 </script>
 </body>
