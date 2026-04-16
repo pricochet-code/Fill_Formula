@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion Clinique - Dossier Patient Complet</title>
+    <title>Gestion Chirurgicale - Plateforme Complète</title>
     
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://unpkg.com/downloadjs@1.4.7/download.js"></script>
@@ -14,15 +14,15 @@
         .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         
         header { text-align: center; border-bottom: 3px solid var(--accent); margin-bottom: 30px; padding-bottom: 10px; }
-        h1 { color: var(--blue); margin: 0; text-transform: uppercase; }
-
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
-        .span-2 { grid-column: span 2; }
-        .span-3 { grid-column: span 3; }
-        .span-4 { grid-column: span 4; }
+        h1 { color: var(--blue); margin: 0; text-transform: uppercase; font-size: 1.5rem; }
 
         fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
         legend { font-weight: bold; color: var(--accent); padding: 0 10px; text-transform: uppercase; font-size: 0.8em; }
+
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .span-2 { grid-column: span 2; }
+        .span-3 { grid-column: span 3; }
+        .span-4 { grid-column: span 4; }
 
         .field { display: flex; flex-direction: column; }
         label { font-size: 0.75em; font-weight: 600; margin-bottom: 4px; color: #555; }
@@ -30,22 +30,23 @@
         
         .doc-panel { background: #fff3e0; border: 2px solid var(--orange); padding: 25px; border-radius: 10px; text-align: center; }
         .doc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: left; margin-bottom: 20px; }
-        .doc-item { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.9em; }
+        .doc-item { display: flex; align-items: center; gap: 8px; font-weight: 600; }
 
-        .btn-gen { background: var(--orange); color: white; border: none; padding: 15px 40px; font-size: 1.1em; font-weight: bold; border-radius: 50px; cursor: pointer; transition: 0.3s; }
-        .btn-gen:hover { background: #d35400; transform: scale(1.02); }
+        .btn-gen { background: var(--orange); color: white; border: none; padding: 15px 40px; font-size: 1.1em; font-weight: bold; border-radius: 50px; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-gen:hover { background: #d35400; transform: scale(1.01); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header><h1>Plateforme de Gestion Médicale</h1></header>
+    <header><h1>Plateforme Médicale - Dossier Patient</h1></header>
 
     <fieldset>
-        <legend>1. Identification & Régime</legend>
+        <legend>1. État Civil & Régime</legend>
         <div class="grid">
             <div class="field"><label>Nom</label><input type="text" id="nom"></div>
             <div class="field"><label>Prénom</label><input type="text" id="prenom"></div>
+            <div class="field"><label>Genre (M/F)</label><input type="text" id="genre" maxlength="1"></div>
             <div class="field"><label>Âge</label><input type="text" id="age"></div>
             <div class="field"><label>Téléphone 1</label><input type="text" id="tel1"></div>
             <div class="field"><label>Téléphone 2</label><input type="text" id="tel2"></div>
@@ -53,86 +54,80 @@
             <div class="field">
                 <label>Régime</label>
                 <select id="regime">
-                    <option value="MA">MA</option><option value="RM">RM</option>
-                    <option value="FM">FM</option><option value="SS">SS</option>
-                    <option value="CP">CP</option><option value="AUTRE">AUTRE</option>
+                    <option value="MA">MA</option><option value="RM">RM</option><option value="FM">FM</option>
+                    <option value="SS">SS</option><option value="CP">CP</option><option value="AUTRE">AUTRE</option>
                 </select>
             </div>
+            <div class="field"><label>Détail Régime (si Autre)</label><input type="text" id="regime_autre"></div>
         </div>
     </fieldset>
 
     <fieldset>
-        <legend>2. Dossier Médical & ATCD</legend>
+        <legend>2. Antécédents & Clinique</legend>
         <div class="grid">
-            <div class="field span-2"><label>Antécédents (HTA, Diabète, AVC, IDM...)</label><input type="text" id="atcd"></div>
+            <div class="field span-2"><label>Antécédents (HTA, Diabète, AVC...)</label><input type="text" id="atcd"></div>
             <div class="field span-2"><label>Motif de consultation</label><input type="text" id="motif"></div>
             <div class="field span-2"><label>Examen Clinique</label><textarea id="examen" rows="2"></textarea></div>
             <div class="field span-2"><label>Évolution</label><textarea id="evolution" rows="2"></textarea></div>
-            <div class="field span-2">
-                <label>Imagerie (TDM, IRM...)</label>
-                <input type="text" id="imagerie" placeholder="Type et compte-rendu">
-            </div>
             <div class="field span-2"><label>Diagnostic Retenu</label><input type="text" id="diagnostic"></div>
+            <div class="field"><label>Médecin</label><input type="text" id="medecin" placeholder="DR."></div>
+        </div>
+    </fieldset>
+
+    <fieldset style="background: #e8f4fd;">
+        <legend>3. Spécificités Imagerie (DI)</legend>
+        <div class="grid">
+            <div class="field"><label>Type d'examen</label>
+                <select id="type_imagerie">
+                    <option value="NONE">-- AUCUN --</option><option value="TDM">TDM (SCANNER)</option><option value="IRM">IRM</option>
+                </select>
+            </div>
+            <div class="field span-3"><label>Région de l'examen (ex: Cérébrale)</label><input type="text" id="region_imagerie"></div>
         </div>
     </fieldset>
 
     <fieldset>
-        <legend>3. Détails de l'Intervention</legend>
+        <legend>4. Intervention & Suites</legend>
         <div class="grid">
             <div class="field span-2"><label>Intervention Programmée</label><input type="text" id="interv"></div>
-            <div class="field"><label>Opéré le</label><input type="date" id="date_op"></div>
-            <div class="field">
-                <label>Urgence / Froid</label>
-                <select id="urgence"><option value="A FROID">A FROID</option><option value="URGENCE">EN URGENCE</option></select>
-            </div>
-            <div class="field"><label>Position Opératoire</label><input type="text" id="pos_op"></div>
-            <div class="field"><label>Estimation Saignement</label><input type="text" id="saignement"></div>
             <div class="field"><label>Anatomopathologie</label><input type="text" id="anapath"></div>
-            <div class="field"><label>Médecin</label><input type="text" id="medecin" placeholder="DR."></div>
-            <div class="field span-4"><label>Résumé de l'intervention</label><textarea id="resume_interv" rows="2"></textarea></div>
-            <div class="field span-4"><label>Suites Opératoires</label><textarea id="suites" rows="2"></textarea></div>
+            <div class="field">
+                <label>Admission</label>
+                <select id="urgence"><option value="a froid">À FROID</option><option value="en urgence">EN URGENCE</option></select>
+            </div>
         </div>
     </fieldset>
 
     <section class="doc-panel">
         <div class="doc-grid">
-            <div class="doc-item"><input type="checkbox" id="checkPA" checked> Proposition Admission</div>
+            <div class="doc-item"><input type="checkbox" id="checkPA" checked> Proposition Admission (PA)</div>
             <div class="doc-item"><input type="checkbox" id="checkBPO" checked> Bilan Pré-Op (BPO)</div>
-            <div class="doc-item"><input type="checkbox" id="checkAG"> Consultation Pré-AG</div>
-            <div class="doc-item"><input type="checkbox" id="checkImg"> Demande Imagerie</div>
-            <div class="doc-item"><input type="checkbox" id="checkReeduc"> Demande Rééducation</div>
-            <div class="doc-item"><input type="checkbox" id="checkCRH"> CR Hospitalisation</div>
-            <div class="doc-item"><input type="checkbox" id="checkTrait"> Traitement Complém.</div>
+            <div class="doc-item"><input type="checkbox" id="checkDI"> Demande Imagerie (DI)</div>
         </div>
-        <button class="btn-gen" onclick="genererLesDocuments()">🚀 GÉNÉRER LES SÉLECTIONNÉS</button>
+        <button class="btn-gen" onclick="generer()">🚀 GÉNÉRER LES DOCUMENTS SÉLECTIONNÉS</button>
     </section>
 </div>
 
 <script>
     const { PDFDocument, rgb, StandardFonts } = PDFLib;
+    const getV = (id) => document.getElementById(id).value.trim().toUpperCase();
 
-    // Récupération globale des données
-    const getD = (id) => document.getElementById(id).value.trim().toUpperCase();
-
-    async function genererLesDocuments() {
+    async function generer() {
         const data = {
-            identite: `${getD('prenom')} ${getD('nom')}`,
-            nom: getD('nom'), prenom: getD('prenom'), age: getD('age'),
-            tels: `${getD('tel1')} / ${getD('tel2')}`,
-            adresse: getD('adresse'), regime: getD('regime'),
-            atcd: getD('atcd'), motif: getD('motif'), examen: getD('examen'),
-            diagnostic: getD('diagnostic'), interv: getD('interv'),
-            medecin: getD('medecin'), date: new Date().toLocaleDateString('fr-FR'),
-            suites: getD('suites'), resume: getD('resume_interv')
+            nom: getV('nom'), prenom: getV('prenom'), age: getV('age'), genre: getV('genre'),
+            tels: `${getV('tel1')} / ${getV('tel2')}`, adresse: getV('adresse'),
+            regime: document.getElementById('regime').value, atcd: getV('atcd'),
+            motif: getV('motif'), examen: getV('examen'), evolution: getV('evolution'),
+            diag: getV('diagnostic'), interv: getV('interv'), anapath: getV('anapath'),
+            medecin: getV('medecin'), urgence: document.getElementById('urgence').value,
+            date: new Date().toLocaleDateString('fr-FR'),
+            typeImg: document.getElementById('type_imagerie').value,
+            regionImg: getV('region_imagerie')
         };
 
         if(document.getElementById('checkPA').checked) await buildPA(data);
         if(document.getElementById('checkBPO').checked) await buildBPO(data);
-        if(document.getElementById('checkAG').checked) await buildDocStandard('AG.pdf', "Conslt_AG", data);
-        if(document.getElementById('checkImg').checked) await buildDocStandard('Img.pdf', "Demande_Img", data);
-        if(document.getElementById('checkReeduc').checked) await buildDocStandard('Reeduc.pdf', "Demande_Reeduc", data);
-        if(document.getElementById('checkCRH').checked) await buildDocStandard('CRH.pdf', "CR_Hospit", data);
-        if(document.getElementById('checkTrait').checked) await buildDocStandard('Trait.pdf', "Traitement", data);
+        if(document.getElementById('checkDI').checked) await buildDI(data);
     }
 
     async function buildPA(d) {
@@ -140,16 +135,16 @@
             const bytes = await fetch('PA.pdf').then(res => res.arrayBuffer());
             const doc = await PDFDocument.load(bytes);
             const page = doc.getPages()[0];
-            const draw = (t, x, y) => { if(t) page.drawText(t, { x, y, size: 10 }) };
+            const dText = (t, x, y) => { if(t) page.drawText(t, { x, y, size: 10 }) };
 
-            draw(d.date, 441, 688);
-            draw(d.nom, 195, 624);
-            draw(d.prenom, 213, 593);
-            draw(d.age, 195, 561);
-            draw(d.tels, 420, 561);
-            draw(d.adresse, 215, 530);
-            draw(d.medecin, 392, 129);
-            
+            dText(d.date, 441, 688);
+            dText(d.nom, 195, 624);
+            dText(d.prenom, 213, 593);
+            dText(d.age, 195, 561);
+            dText(d.tels, 420, 561);
+            dText(d.adresse, 215, 530);
+            dText(d.medecin, 392, 129);
+
             const res = await doc.save();
             download(res, `PA_${d.nom}.pdf`, "application/pdf");
         } catch(e) { console.error(e); }
@@ -162,11 +157,12 @@
             const page = doc.getPages()[0];
             const font = await doc.embedFont(StandardFonts.Helvetica);
             
-            // COORDONNÉES VALIDÉES : 470 (Date), 295 (Patient), 84 (Médecin)
+            // Coordonnées Y validées pour BPO
             const yDate = 470, yPatient = 295, yMed = 84;
+            const fullP = `${d.prenom} ${d.nom}`;
 
             [231, 484, 751].forEach(x => page.drawText(d.date, { x, y: yDate, size: 10, font }));
-            [70, 341, 615].forEach(x => page.drawText(d.identite, { x, y: yPatient, size: 10, font }));
+            [70, 341, 615].forEach(x => page.drawText(fullP, { x, y: yPatient, size: 10, font }));
 
             if(d.medecin) {
                 const w = font.widthOfTextAtSize(d.medecin, 10);
@@ -178,20 +174,38 @@
         } catch(e) { console.error(e); }
     }
 
-    // Fonction générique pour les nouveaux documents
-    async function buildDocStandard(fileName, outName, d) {
+    async function buildDI(d) {
         try {
-            const bytes = await fetch(fileName).then(res => res.arrayBuffer());
+            const bytes = await fetch('DI.pdf').then(res => res.arrayBuffer());
             const doc = await PDFDocument.load(bytes);
             const page = doc.getPages()[0];
-            
-            // Exemple de positionnement par défaut à ajuster selon le document
-            page.drawText(d.identite, { x: 100, y: 700, size: 12 });
-            page.drawText(d.date, { x: 450, y: 750, size: 10 });
-            
+            const dText = (t, x, y) => { if(t) page.drawText(t, { x, y, size: 10 }) };
+
+            dText(d.date, 465, 688);
+            dText(`${d.nom} ${d.prenom}`, 248, 597);
+
+            if(d.typeImg === "TDM") {
+                dText("X", 248, 597); // Coordonnée X selon vos notes
+                dText(d.regionImg, 318, 575);
+            } else if(d.typeImg === "IRM") {
+                dText("X", 255, 540);
+                dText(d.regionImg, 318, 543);
+            }
+
+            dText(d.genre, 243, 458);
+            dText(d.age, 390, 458);
+            dText(d.atcd, 212, 434);
+            dText(d.motif, 218, 410);
+            dText(d.examen, 218, 339); // Seconde ligne d'examen
+            dText(d.interv, 218, 339);
+            dText(d.evolution, 218, 291);
+            dText(d.anapath, 218, 268);
+            dText(d.diag, 250, 196);
+            dText(d.medecin, 402, 70);
+
             const res = await doc.save();
-            download(res, `${outName}_${d.nom}.pdf`, "application/pdf");
-        } catch(e) { console.warn(`Fichier ${fileName} manquant ou erreur.`); }
+            download(res, `DI_${d.nom}.pdf`, "application/pdf");
+        } catch(e) { console.error(e); }
     }
 </script>
 </body>
