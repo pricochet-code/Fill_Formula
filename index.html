@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion Clinique - Multi-Génération</title>
+    <title>Gestion Chirurgicale - PA & BPO Final</title>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://unpkg.com/downloadjs@1.4.7/download.js"></script>
     <style>
-        :root { --blue: #2980b9; --dark: #2c3e50; --green: #27ae60; --bg: #f5f6fa; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; }
+        :root { --blue: #2980b9; --dark: #2c3e50; --orange: #e67e22; --green: #27ae60; --bg: #f5f6fa; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        
         h1 { text-align: center; color: var(--dark); border-bottom: 3px solid var(--blue); padding-bottom: 10px; margin-bottom: 30px; }
         
         .section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; padding: 20px; border: 1px solid #dee2e6; border-radius: 8px; background: #fff; }
@@ -20,13 +21,11 @@
         .half { grid-column: span 2; }
         
         label { font-size: 0.85em; margin-bottom: 4px; font-weight: 600; color: #444; }
-        input, textarea, select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; text-transform: uppercase; }
+        input, textarea, select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95em; text-transform: uppercase; transition: 0.3s; }
+        input:focus { border-color: var(--blue); outline: none; box-shadow: 0 0 5px rgba(41,128,185,0.2); }
         
-        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
-        .check-item { display: flex; align-items: center; font-size: 0.85em; gap: 5px; cursor: pointer; }
-
-        .selector-box { background: #fff3e0; padding: 25px; border-radius: 8px; border: 2px solid #ff9800; margin-top: 20px; text-align: center; }
-        .btn-main { background: #e67e22; color: white; padding: 20px 50px; border: none; border-radius: 50px; font-size: 1.2em; cursor: pointer; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 15px rgba(230,126,34,0.4); }
+        .selector-box { background: #fef5e7; padding: 25px; border-radius: 10px; border: 2px solid var(--orange); margin-top: 30px; text-align: center; }
+        .btn-main { background: var(--orange); color: white; padding: 18px 50px; border: none; border-radius: 50px; font-size: 1.2em; cursor: pointer; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 15px rgba(230,126,34,0.3); }
         .btn-main:hover { background: #d35400; transform: translateY(-2px); }
         
         .doc-choice { display: inline-block; margin: 10px 20px; font-size: 1.1em; font-weight: bold; cursor: pointer; }
@@ -35,15 +34,15 @@
 <body>
 
 <div class="container">
-    <h1>🏥 Impression de Dossiers Médicaux</h1>
+    <h1>🏥 Dossier Chirurgical Partagé</h1>
 
     <div class="section">
-        <div class="section-title">1. Identification du Patient</div>
+        <div class="section-title">1. État Civil du Patient</div>
         <div class="field"><label>Nom</label><input type="text" id="nom"></div>
         <div class="field"><label>Prénom</label><input type="text" id="prenom"></div>
         <div class="field"><label>Âge</label><input type="text" id="age"></div>
         <div class="field"><label>Téléphone</label><input type="text" id="tel"></div>
-        <div class="field half"><label>Adresse</label><input type="text" id="adresse"></div>
+        <div class="field half"><label>Adresse complète</label><input type="text" id="adresse"></div>
         <div class="field"><label>Régime</label>
             <select id="regime">
                 <option value="M">M</option><option value="FM">FM</option><option value="RM">RM</option>
@@ -56,38 +55,30 @@
     <div class="section">
         <div class="section-title">2. Antécédents & Traitements</div>
         <div class="field full">
-            <label>Antécédents</label>
-            <div class="checkbox-grid">
-                <label class="check-item"><input type="checkbox" class="atcd" value="HTA"> HTA</label>
-                <label class="check-item"><input type="checkbox" class="atcd" value="DIABETE"> DIABÈTE</label>
-                <label class="check-item"><input type="checkbox" class="atcd" value="AVC"> AVC</label>
-                <label class="check-item"><input type="checkbox" class="atcd" value="IDM"> IDM</label>
-                <label class="check-item"><input type="checkbox" class="atcd" value="CORONARIEN"> CORONARIEN</label>
-            </div>
-            <input type="text" id="atcd_autre" placeholder="AUTRES ANTECEDENTS..." style="margin-top:10px;">
+            <label>Antécédents Médicaux</label>
+            <input type="text" id="atcd_global" placeholder="EX: HTA, DIABÈTE, ASTHME...">
         </div>
-        <div class="field full"><label>Traitement actuel</label><textarea id="traitement" rows="2"></textarea></div>
+        <div class="field full"><label>Traitement en cours</label><textarea id="traitement" rows="2"></textarea></div>
     </div>
 
     <div class="section">
-        <div class="section-title">3. Détails Médicaux</div>
-        <div class="field full"><label>Motif de consultation</label><textarea id="motif"></textarea></div>
-        <div class="field full"><label>Diagnostic retenu</label><textarea id="diag"></textarea></div>
-        <div class="field full"><label>Intervention programmée</label><textarea id="interv"></textarea></div>
-        <div class="field"><label>Type d'admission</label>
+        <div class="section-title">3. Données de l'Intervention</div>
+        <div class="field full"><label>Motif de consultation</label><textarea id="motif" rows="2"></textarea></div>
+        <div class="field full"><label>Diagnostic retenu</label><textarea id="diag" rows="2"></textarea></div>
+        <div class="field full"><label>Intervention programmée</label><textarea id="interv" rows="2"></textarea></div>
+        <div class="field"><label>Admission</label>
             <select id="urgence"><option value="a froid">A FROID</option><option value="en urgence">EN URGENCE</option></select>
         </div>
-        <div class="field half"><label>Nom du Médecin</label><input type="text" id="medecin"></div>
+        <div class="field half"><label>Médecin Traitant / Chirurgien</label><input type="text" id="medecin" placeholder="DR. ..."></div>
     </div>
 
     <div class="selector-box">
-        <h3 style="margin-top:0; color:#d35400">DOCUMENTS À GÉNÉRER</h3>
+        <h3 style="margin-top:0; color:#d35400">CHOIX DES DOCUMENTS À IMPRIMER</h3>
         <div>
-            <label class="doc-choice"><input type="checkbox" id="checkPA" checked> Formulaire PA</label>
-            <label class="doc-choice"><input type="checkbox" id="checkBPO" checked> Bilan BPO</label>
+            <label class="doc-choice"><input type="checkbox" id="checkPA" checked> Formulaire PA (Portrait)</label>
+            <label class="doc-choice"><input type="checkbox" id="checkBPO" checked> Bilan BPO (Paysage)</label>
         </div>
-        <p style="font-size: 0.85em; color: #666;">(Les documents cochés seront téléchargés simultanément)</p>
-        <button class="btn-main" onclick="genererTousLesDocuments()">🚀 GÉNÉRER LES DOCUMENTS</button>
+        <button class="btn-main" onclick="genererTousLesDocuments()">🚀 GÉNÉRER LES DOCUMENTS (MAJUSCULES)</button>
     </div>
 </div>
 
@@ -107,79 +98,85 @@
         if (faireBPO) await genererBPO();
     }
 
-    // --- LOGIQUE COMMUNE : Y PUR (0 = BAS) ---
-    function drawDirect(page, text, x, y, size = 10) {
-        if(!text) return;
-        page.drawText(text.toString().toUpperCase(), {
-            x: x,
-            y: y, // Utilisation directe sans height - y
-            size: size,
-            color: rgb(0,0,0)
-        });
-    }
-
+    // --- PA (PORTRAIT) : LOGIQUE Y DIRECTE (0=BAS) ---
     async function genererPA() {
         const val = (id) => document.getElementById(id).value.trim().toUpperCase();
         try {
             const bytes = await fetch('PA.pdf').then(res => res.arrayBuffer());
             const pdfDoc = await PDFDocument.load(bytes);
             const page = pdfDoc.getPages()[0];
-
-            const d = (t, x, y, s) => drawDirect(page, t, x, y, s);
             const dateStr = new Date().toLocaleDateString('fr-FR');
 
-            d(dateStr, 441, 688);
-            d(val('nom'), 195, 624);
-            d(val('prenom'), 213, 593);
-            d(val('age'), 195, 561); d(val('tel'), 420, 561);
-            d(val('adresse'), 215, 530);
+            const draw = (t, x, y, s = 10) => {
+                if(t) page.drawText(t.toString().toUpperCase(), { x, y, size: s, color: rgb(0,0,0) });
+            };
+
+            // Coordonnées PA (Y 0=bas)
+            draw(dateStr, 441, 688);
+            draw(val('nom'), 195, 624);
+            draw(val('prenom'), 213, 593);
+            draw(val('age'), 195, 561); draw(val('tel'), 420, 561);
+            draw(val('adresse'), 215, 530);
 
             const regPos = { "M": 218, "FM": 253, "RM": 293, "SS": 335, "CP": 372 };
             const regime = document.getElementById('regime').value;
-            if (regPos[regime]) d("X", regPos[regime], 495, 12);
-            else if (regime === "Autre") d(val('regime_autre'), 459, 498);
+            if (regPos[regime]) draw("X", regPos[regime], 495, 12);
+            else if (regime === "Autre") draw(val('regime_autre'), 459, 498);
 
-            const longT = (t, x1, y1, x2, y2) => {
-                if(!t) return;
-                if(t.length <= 55) d(t, x1, y1);
-                else { d(t.substring(0,55), x1, y1); d(t.substring(55, 110), x2, y2); }
+            // Zones de texte longs
+            const longText = (txt, x1, y1, x2, y2) => {
+                if(!txt) return;
+                if(txt.length <= 55) draw(txt, x1, y1);
+                else { draw(txt.substring(0,55), x1, y1); draw(txt.substring(55, 110), x2, y2); }
             };
-            longT(val('motif'), 279, 465, 160, 434);
-            longT(val('diag'), 259, 402, 160, 369);
-            longT(val('interv'), 301, 339, 160, 307);
+            longText(val('motif'), 279, 465, 160, 434);
+            longText(val('diag'), 259, 402, 160, 369);
+            longText(val('interv'), 301, 339, 160, 307);
 
-            if (document.getElementById('urgence').value === "en urgence") d("X", 352, 241, 12);
-            else d("X", 447, 242, 12);
+            if (document.getElementById('urgence').value === "en urgence") draw("X", 352, 241, 12);
+            else draw("X", 447, 242, 12);
 
-            d(val('medecin'), 392, 129);
+            draw(val('medecin'), 392, 129);
 
             const result = await pdfDoc.save();
             download(result, `PA_${val('nom')}.pdf`, "application/pdf");
-        } catch (e) { console.error(e); }
+        } catch (e) { alert("Erreur sur PA.pdf: " + e.message); }
     }
 
+    // --- BPO (PAYSAGE) : LOGIQUE Y INVERSÉE (HEIGHT - Y) ---
     async function genererBPO() {
         const val = (id) => document.getElementById(id).value.trim().toUpperCase();
         try {
             const bytes = await fetch('BPO.pdf').then(res => res.arrayBuffer());
             const pdfDoc = await PDFDocument.load(bytes);
             const page = pdfDoc.getPages()[0];
+            const { height } = page.getSize(); // Indispensable pour l'inversion Paysage
 
-            const d = (t, x, y, s) => drawDirect(page, t, x, y, s);
+            const drawInv = (t, x, y, s = 10) => {
+                if(t) page.drawText(t.toString().toUpperCase(), { 
+                    x: x, 
+                    y: height - y, // Correction de l'inversion constatée
+                    size: s, 
+                    color: rgb(0,0,0) 
+                });
+            };
+
             const dateStr = new Date().toLocaleDateString('fr-FR');
             const patient = val('prenom') + " " + val('nom');
             const med = val('medecin');
 
-            // Date (3 zones)
-            d(dateStr, 231, 470); d(dateStr, 484, 470); d(dateStr, 751, 470);
-            // Patient (3 zones)
-            d(patient, 70, 295); d(patient, 341, 295); d(patient, 615, 294);
-            // Médecin (3 zones)
-            d(med, 131, 89); d(med, 345, 89); d(med, 577, 87);
+            // Date (Haut de page)
+            drawInv(dateStr, 231, 470); drawInv(dateStr, 484, 470); drawInv(dateStr, 751, 470);
+            
+            // Patient (Milieu)
+            drawInv(patient, 70, 295); drawInv(patient, 341, 295); drawInv(patient, 615, 294);
+            
+            // Médecin (Bas de page)
+            drawInv(med, 131, 89); drawInv(med, 345, 89); drawInv(med, 577, 87);
 
             const result = await pdfDoc.save();
             download(result, `BPO_${val('nom')}.pdf`, "application/pdf");
-        } catch (e) { console.error(e); }
+        } catch (e) { alert("Erreur sur BPO.pdf: " + e.message); }
     }
 </script>
 </body>
