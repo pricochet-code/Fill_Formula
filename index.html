@@ -3,154 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plateforme de Gestion Médicale - Documents Pré-Opératoires</title>
+    <title>Gestion Clinique - Dossier Patient Complet</title>
     
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://unpkg.com/downloadjs@1.4.7/download.js"></script>
     
     <style>
-        :root { --primary: #2c3e50; --accent: #2980b9; --warn: #e67e22; --light-bg: #f4f7f6; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: var(--light-bg); margin: 0; padding: 40px; }
-        .app-container { max-width: 1000px; margin: 0 auto; background: #fff; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        :root { --blue: #2c3e50; --accent: #2980b9; --orange: #e67e22; --bg: #f5f6fa; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); padding: 20px; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         
-        header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
-        h1 { color: var(--primary); margin: 0; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        header { text-align: center; border-bottom: 3px solid var(--accent); margin-bottom: 30px; padding-bottom: 10px; }
+        h1 { color: var(--blue); margin: 0; text-transform: uppercase; }
+
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+        .span-2 { grid-column: span 2; }
+        .span-3 { grid-column: span 3; }
+        .span-4 { grid-column: span 4; }
+
+        fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        legend { font-weight: bold; color: var(--accent); padding: 0 10px; text-transform: uppercase; font-size: 0.8em; }
+
+        .field { display: flex; flex-direction: column; }
+        label { font-size: 0.75em; font-weight: 600; margin-bottom: 4px; color: #555; }
+        input, select, textarea { padding: 10px; border: 1px solid #ccc; border-radius: 5px; text-transform: uppercase; font-size: 0.9em; }
         
-        fieldset { border: 1px solid #ddd; border-radius: 10px; padding: 25px; margin-bottom: 25px; }
-        legend { font-weight: bold; color: var(--accent); padding: 0 10px; text-transform: uppercase; font-size: 0.85rem; }
-        
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        .col-span-3 { grid-column: span 3; }
-        .col-span-2 { grid-column: span 2; }
-        
-        .form-group { display: flex; flex-direction: column; }
-        label { font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; color: #666; }
-        input, textarea, select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; transition: border 0.3s; text-transform: uppercase; }
-        input:focus { border-color: var(--accent); outline: none; }
-        
-        .doc-selection { background: #fff9f0; border: 2px dashed var(--warn); padding: 30px; border-radius: 12px; text-align: center; }
-        .doc-selection h3 { color: var(--warn); margin-top: 0; }
-        
-        .btn-submit { background: var(--warn); color: white; border: none; padding: 18px 60px; font-size: 1.1rem; font-weight: bold; border-radius: 50px; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(230,126,34,0.3); margin-top: 15px; }
-        .btn-submit:hover { background: #d35400; transform: translateY(-2px); }
-        
-        .checkbox-group { display: flex; justify-content: center; gap: 30px; margin-bottom: 20px; }
-        .checkbox-group label { display: flex; align-items: center; gap: 8px; font-size: 1rem; cursor: pointer; }
+        .doc-panel { background: #fff3e0; border: 2px solid var(--orange); padding: 25px; border-radius: 10px; text-align: center; }
+        .doc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; text-align: left; margin-bottom: 20px; }
+        .doc-item { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.9em; }
+
+        .btn-gen { background: var(--orange); color: white; border: none; padding: 15px 40px; font-size: 1.1em; font-weight: bold; border-radius: 50px; cursor: pointer; transition: 0.3s; }
+        .btn-gen:hover { background: #d35400; transform: scale(1.02); }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <header>
-        <h1>Interface d'Édition Médicale</h1>
-    </header>
+<div class="container">
+    <header><h1>Plateforme de Gestion Médicale</h1></header>
 
-    <main id="medical-form">
-        <fieldset>
-            <legend>Identification du Patient</legend>
-            <div class="grid">
-                <div class="form-group"><label>Nom</label><input type="text" id="nom"></div>
-                <div class="form-group"><label>Prénom</label><input type="text" id="prenom"></div>
-                <div class="form-group"><label>Âge</label><input type="text" id="age"></div>
-                <div class="form-group"><label>Téléphone</label><input type="text" id="tel"></div>
-                <div class="form-group col-span-2"><label>Adresse</label><input type="text" id="adresse"></div>
-                <div class="form-group"><label>Régime</label>
-                    <select id="regime">
-                        <option value="M">M</option><option value="FM">FM</option><option value="RM">RM</option>
-                        <option value="SS">SS</option><option value="CP">CP</option><option value="Autre">AUTRE</option>
-                    </select>
-                </div>
-                <div class="form-group col-span-2"><label>Détails Régime (si autre)</label><input type="text" id="regime_autre"></div>
+    <fieldset>
+        <legend>1. Identification & Régime</legend>
+        <div class="grid">
+            <div class="field"><label>Nom</label><input type="text" id="nom"></div>
+            <div class="field"><label>Prénom</label><input type="text" id="prenom"></div>
+            <div class="field"><label>Âge</label><input type="text" id="age"></div>
+            <div class="field"><label>Téléphone 1</label><input type="text" id="tel1"></div>
+            <div class="field"><label>Téléphone 2</label><input type="text" id="tel2"></div>
+            <div class="field span-2"><label>Adresse</label><input type="text" id="adresse"></div>
+            <div class="field">
+                <label>Régime</label>
+                <select id="regime">
+                    <option value="MA">MA</option><option value="RM">RM</option>
+                    <option value="FM">FM</option><option value="SS">SS</option>
+                    <option value="CP">CP</option><option value="AUTRE">AUTRE</option>
+                </select>
             </div>
-        </fieldset>
+        </div>
+    </fieldset>
 
-        <fieldset>
-            <legend>Dossier Médical</legend>
-            <div class="grid">
-                <div class="form-group col-span-3"><label>Antécédents</label><input type="text" id="atcd"></div>
-                <div class="form-group col-span-3"><label>Traitement Actuel</label><textarea id="traitement" rows="2"></textarea></div>
-                <div class="form-group col-span-3"><label>Motif / Diagnostic</label><textarea id="motif" rows="2"></textarea></div>
-                <div class="form-group col-span-3"><label>Intervention Prévue</label><textarea id="interv" rows="2"></textarea></div>
-                <div class="form-group"><label>Type d'Admission</label>
-                    <select id="urgence"><option value="a froid">À FROID</option><option value="en urgence">EN URGENCE</option></select>
-                </div>
-                <div class="form-group col-span-2"><label>Médecin Traitant</label><input type="text" id="medecin" placeholder="DR."></div>
+    <fieldset>
+        <legend>2. Dossier Médical & ATCD</legend>
+        <div class="grid">
+            <div class="field span-2"><label>Antécédents (HTA, Diabète, AVC, IDM...)</label><input type="text" id="atcd"></div>
+            <div class="field span-2"><label>Motif de consultation</label><input type="text" id="motif"></div>
+            <div class="field span-2"><label>Examen Clinique</label><textarea id="examen" rows="2"></textarea></div>
+            <div class="field span-2"><label>Évolution</label><textarea id="evolution" rows="2"></textarea></div>
+            <div class="field span-2">
+                <label>Imagerie (TDM, IRM...)</label>
+                <input type="text" id="imagerie" placeholder="Type et compte-rendu">
             </div>
-        </fieldset>
+            <div class="field span-2"><label>Diagnostic Retenu</label><input type="text" id="diagnostic"></div>
+        </div>
+    </fieldset>
 
-        <section class="doc-selection">
-            <h3>Documents à Éditer</h3>
-            <div class="checkbox-group">
-                <label><input type="checkbox" id="checkPA" checked> Formulaire PA (Portrait)</label>
-                <label><input type="checkbox" id="checkBPO" checked> Bilan BPO (Paysage)</label>
+    <fieldset>
+        <legend>3. Détails de l'Intervention</legend>
+        <div class="grid">
+            <div class="field span-2"><label>Intervention Programmée</label><input type="text" id="interv"></div>
+            <div class="field"><label>Opéré le</label><input type="date" id="date_op"></div>
+            <div class="field">
+                <label>Urgence / Froid</label>
+                <select id="urgence"><option value="A FROID">A FROID</option><option value="URGENCE">EN URGENCE</option></select>
             </div>
-            <button class="btn-submit" onclick="processDocuments()">GÉNÉRER LES PDF</button>
-        </section>
-    </main>
+            <div class="field"><label>Position Opératoire</label><input type="text" id="pos_op"></div>
+            <div class="field"><label>Estimation Saignement</label><input type="text" id="saignement"></div>
+            <div class="field"><label>Anatomopathologie</label><input type="text" id="anapath"></div>
+            <div class="field"><label>Médecin</label><input type="text" id="medecin" placeholder="DR."></div>
+            <div class="field span-4"><label>Résumé de l'intervention</label><textarea id="resume_interv" rows="2"></textarea></div>
+            <div class="field span-4"><label>Suites Opératoires</label><textarea id="suites" rows="2"></textarea></div>
+        </div>
+    </fieldset>
+
+    <section class="doc-panel">
+        <div class="doc-grid">
+            <div class="doc-item"><input type="checkbox" id="checkPA" checked> Proposition Admission</div>
+            <div class="doc-item"><input type="checkbox" id="checkBPO" checked> Bilan Pré-Op (BPO)</div>
+            <div class="doc-item"><input type="checkbox" id="checkAG"> Consultation Pré-AG</div>
+            <div class="doc-item"><input type="checkbox" id="checkImg"> Demande Imagerie</div>
+            <div class="doc-item"><input type="checkbox" id="checkReeduc"> Demande Rééducation</div>
+            <div class="doc-item"><input type="checkbox" id="checkCRH"> CR Hospitalisation</div>
+            <div class="doc-item"><input type="checkbox" id="checkTrait"> Traitement Complém.</div>
+        </div>
+        <button class="btn-gen" onclick="genererLesDocuments()">🚀 GÉNÉRER LES SÉLECTIONNÉS</button>
+    </section>
 </div>
 
 <script>
     const { PDFDocument, rgb, StandardFonts } = PDFLib;
 
-    async function processDocuments() {
-        const val = (id) => document.getElementById(id).value.trim().toUpperCase();
-        const dateStr = new Date().toLocaleDateString('fr-FR');
-        
-        if (document.getElementById('checkPA').checked) await buildPA(val, dateStr);
-        if (document.getElementById('checkBPO').checked) await buildBPO(val, dateStr);
+    // Récupération globale des données
+    const getD = (id) => document.getElementById(id).value.trim().toUpperCase();
+
+    async function genererLesDocuments() {
+        const data = {
+            identite: `${getD('prenom')} ${getD('nom')}`,
+            nom: getD('nom'), prenom: getD('prenom'), age: getD('age'),
+            tels: `${getD('tel1')} / ${getD('tel2')}`,
+            adresse: getD('adresse'), regime: getD('regime'),
+            atcd: getD('atcd'), motif: getD('motif'), examen: getD('examen'),
+            diagnostic: getD('diagnostic'), interv: getD('interv'),
+            medecin: getD('medecin'), date: new Date().toLocaleDateString('fr-FR'),
+            suites: getD('suites'), resume: getD('resume_interv')
+        };
+
+        if(document.getElementById('checkPA').checked) await buildPA(data);
+        if(document.getElementById('checkBPO').checked) await buildBPO(data);
+        if(document.getElementById('checkAG').checked) await buildDocStandard('AG.pdf', "Conslt_AG", data);
+        if(document.getElementById('checkImg').checked) await buildDocStandard('Img.pdf', "Demande_Img", data);
+        if(document.getElementById('checkReeduc').checked) await buildDocStandard('Reeduc.pdf', "Demande_Reeduc", data);
+        if(document.getElementById('checkCRH').checked) await buildDocStandard('CRH.pdf', "CR_Hospit", data);
+        if(document.getElementById('checkTrait').checked) await buildDocStandard('Trait.pdf', "Traitement", data);
     }
 
-    async function buildPA(val, date) {
+    async function buildPA(d) {
         try {
             const bytes = await fetch('PA.pdf').then(res => res.arrayBuffer());
             const doc = await PDFDocument.load(bytes);
             const page = doc.getPages()[0];
-            const d = (t, x, y, s = 10) => { if(t) page.drawText(t.toString(), { x, y, size: s }) };
+            const draw = (t, x, y) => { if(t) page.drawText(t, { x, y, size: 10 }) };
 
-            d(date, 441, 688);
-            d(val('nom'), 195, 624);
-            d(val('prenom'), 213, 593);
-            d(val('age'), 195, 561);
-            d(val('adresse'), 215, 530);
-            d(val('medecin'), 392, 129);
-
-            const result = await doc.save();
-            download(result, `PA_${val('nom')}.pdf`, "application/pdf");
+            draw(d.date, 441, 688);
+            draw(d.nom, 195, 624);
+            draw(d.prenom, 213, 593);
+            draw(d.age, 195, 561);
+            draw(d.tels, 420, 561);
+            draw(d.adresse, 215, 530);
+            draw(d.medecin, 392, 129);
+            
+            const res = await doc.save();
+            download(res, `PA_${d.nom}.pdf`, "application/pdf");
         } catch(e) { console.error(e); }
     }
 
-    async function buildBPO(val, date) {
+    async function buildBPO(d) {
         try {
             const bytes = await fetch('BPO.pdf').then(res => res.arrayBuffer());
             const doc = await PDFDocument.load(bytes);
             const page = doc.getPages()[0];
             const font = await doc.embedFont(StandardFonts.Helvetica);
             
-            const patient = `${val('prenom')} ${val('nom')}`;
-            const medecin = val('medecin');
+            // COORDONNÉES VALIDÉES : 470 (Date), 295 (Patient), 84 (Médecin)
+            const yDate = 470, yPatient = 295, yMed = 84;
 
-            // Coordonnées Y validées : 470 (Haut), 295 (Patient), 84 (Bas)
-            page.drawText(date, { x: 231, y: 470, size: 10, font });
-            page.drawText(date, { x: 484, y: 470, size: 10, font });
-            page.drawText(date, { x: 751, y: 470, size: 10, font });
+            [231, 484, 751].forEach(x => page.drawText(d.date, { x, y: yDate, size: 10, font }));
+            [70, 341, 615].forEach(x => page.drawText(d.identite, { x, y: yPatient, size: 10, font }));
 
-            page.drawText(patient, { x: 70, y: 295, size: 10, font });
-            page.drawText(patient, { x: 341, y: 295, size: 10, font });
-            page.drawText(patient, { x: 615, y: 295, size: 10, font });
-
-            if(medecin) {
-                const textWidth = font.widthOfTextAtSize(medecin, 10);
-                const pointsX = [282, 549, 816];
-                pointsX.forEach(x => {
-                    page.drawText(medecin, { x: x - textWidth, y: 84, size: 10, font });
-                });
+            if(d.medecin) {
+                const w = font.widthOfTextAtSize(d.medecin, 10);
+                [282, 549, 816].forEach(x => page.drawText(d.medecin, { x: x - w, y: yMed, size: 10, font }));
             }
 
-            const result = await doc.save();
-            download(result, `BPO_${val('nom')}.pdf`, "application/pdf");
-        } catch(e) { alert("BPO Error: " + e.message); }
+            const res = await doc.save();
+            download(res, `BPO_${d.nom}.pdf`, "application/pdf");
+        } catch(e) { console.error(e); }
+    }
+
+    // Fonction générique pour les nouveaux documents
+    async function buildDocStandard(fileName, outName, d) {
+        try {
+            const bytes = await fetch(fileName).then(res => res.arrayBuffer());
+            const doc = await PDFDocument.load(bytes);
+            const page = doc.getPages()[0];
+            
+            // Exemple de positionnement par défaut à ajuster selon le document
+            page.drawText(d.identite, { x: 100, y: 700, size: 12 });
+            page.drawText(d.date, { x: 450, y: 750, size: 10 });
+            
+            const res = await doc.save();
+            download(res, `${outName}_${d.nom}.pdf`, "application/pdf");
+        } catch(e) { console.warn(`Fichier ${fileName} manquant ou erreur.`); }
     }
 </script>
-
 </body>
 </html>
