@@ -2,15 +2,16 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Correction Finale BPO - Inversion des Pôles</title>
+    <title>Gestion Médicale - BPO Coordonnées Précises</title>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://unpkg.com/downloadjs@1.4.7/download.js"></script>
     <style>
         :root { --blue: #2980b9; --dark: #2c3e50; --orange: #e67e22; --bg: #f5f6fa; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         h1 { text-align: center; color: var(--dark); border-bottom: 3px solid var(--blue); padding-bottom: 10px; margin-bottom: 30px; }
         .section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; padding: 20px; border: 1px solid #dee2e6; border-radius: 8px; }
+        label { font-size: 0.8em; font-weight: 600; color: #555; display: block; margin-bottom: 5px; }
         input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; text-transform: uppercase; width: 100%; box-sizing: border-box; }
         .btn-main { background: var(--orange); color: white; padding: 15px 40px; border: none; border-radius: 50px; font-size: 1.1em; cursor: pointer; font-weight: bold; width: 100%; margin-top: 20px; }
     </style>
@@ -18,7 +19,7 @@
 <body>
 
 <div class="container">
-    <h1>🏥 Impression Dossier Médical</h1>
+    <h1>🏥 Finalisation BPO</h1>
 
     <div class="section">
         <div><label>Nom</label><input type="text" id="nom"></div>
@@ -44,32 +45,29 @@
             const medecin = val('medecin');
             const patient = val('prenom') + " " + val('nom');
 
-            // --- LA CORRECTION FINALE ---
-            // Puisque 500 montait et 50 descendait :
-            // On donne la valeur MAXIMALE (550) à la date pour qu'elle aille en haut.
-            // On donne la valeur MINIMALE (50) au médecin pour qu'il aille en bas.
-            const Y_HAUT = 550; 
-            const Y_MILIEU = 350;
-            const Y_BAS = 60; 
+            // --- VOS COORDONNÉES EXACTES ---
+            const Y_DATE = 470;     // Haut
+            const Y_PATIENT = 295;  // Milieu
+            const Y_MEDECIN = 84;   // Bas (Signature)
 
-            // 1. DATE (Tout en haut)
-            page.drawText(dateStr, { x: 231, y: Y_HAUT, size: 10, font: font });
-            page.drawText(dateStr, { x: 484, y: Y_HAUT, size: 10, font: font });
-            page.drawText(dateStr, { x: 751, y: Y_HAUT, size: 10, font: font });
+            // 1. DATE (x: 231, 484, 751)
+            page.drawText(dateStr, { x: 231, y: Y_DATE, size: 10, font: font });
+            page.drawText(dateStr, { x: 484, y: Y_DATE, size: 10, font: font });
+            page.drawText(dateStr, { x: 751, y: Y_DATE, size: 10, font: font });
 
-            // 2. PATIENT (Milieu)
-            page.drawText(patient, { x: 70, y: Y_MILIEU, size: 10, font: font });
-            page.drawText(patient, { x: 341, y: Y_MILIEU, size: 10, font: font });
-            page.drawText(patient, { x: 615, y: Y_MILIEU, size: 10, font: font });
+            // 2. PATIENT (x: 70, 341, 615)
+            page.drawText(patient, { x: 70, y: Y_PATIENT, size: 10, font: font });
+            page.drawText(patient, { x: 341, y: Y_PATIENT, size: 10, font: font });
+            page.drawText(patient, { x: 615, y: Y_PATIENT, size: 10, font: font });
 
-            // 3. MÉDECIN (Tout en bas + Alignement Droite)
+            // 3. MÉDECIN (Aligné à droite sur vos points X)
             if(medecin) {
                 const textWidth = font.widthOfTextAtSize(medecin, 10);
                 const pointsX = [282, 549, 816];
                 pointsX.forEach(x => {
                     page.drawText(medecin, {
                         x: x - textWidth, 
-                        y: Y_BAS, 
+                        y: Y_MEDECIN, 
                         size: 10,
                         font: font
                     });
