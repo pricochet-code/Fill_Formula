@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Saisie Médicale Expert v4.0</title>
+    <title>Saisie Médicale Expert v4.1</title>
     
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://unpkg.com/downloadjs@1.4.7/download.js"></script>
@@ -99,7 +99,7 @@
             </div>
             <div class="field span-2"><label>Motif / Histoire de la maladie</label><textarea id="motif" rows="2"></textarea></div>
             <div class="field span-2"><label>Examen Physique / Évolution</label><textarea id="evolution" rows="2"></textarea></div>
-            <div class="field span-2"><label>Diagnostic Retenu</label><input type="text" id="diagnostic"></div>
+            <div class="field span-2"><label>Diagnostic Retenu (PA)</label><input type="text" id="diagnostic"></div>
         </div>
     </fieldset>
 
@@ -136,7 +136,7 @@
 </div>
 
 <script>
-    const { PDFDocument, StandardFonts } = PDFLib;
+    const { PDFDocument, StandardFonts, degrees } = PDFLib;
     const getV = (id) => document.getElementById(id).value.trim().toUpperCase();
 
     async function generer() {
@@ -227,22 +227,34 @@
         download(await doc.save(), `DR_${d.nom}.pdf`, "application/pdf");
     }
 
-    // --- PECDI (PAYSAGE PAGE 2) ---
+    // --- PECDI (PAYSAGE AVEC ROTATION) ---
     async function buildPECDI(d) {
         try {
             const bytes = await fetch('PECDI.pdf').then(res => res.arrayBuffer());
             const doc = await PDFDocument.load(bytes);
-            const page = doc.getPages()[1]; // Accès page 2
-            const write = (t, x, y) => { if(t) page.drawText(t.toString(), { x, y, size: 12 }) };
+            const page = doc.getPages()[1]; 
+            
+            // On tourne le texte de -90 degrés pour compenser l'orientation du PDF paysage
+            const write = (t, x, y) => { 
+                if(t) page.drawText(t.toString(), { x, y, size: 12, rotate: degrees(-90) }) 
+            };
 
             write(`${d.nom} ${d.prenom}`, 118, 420);
-            write(d.genre, 146, 189); write(d.age, 636, 519);
+            write(d.genre, 146, 189); 
+            write(d.age, 636, 519);
+            
             if(d.tdm) write("X", 75, 322);
             if(d.irm) write(d.irm_reg, 146, 189);
-            write(d.atcd, 519, 507); write(d.motif, 520, 492);
-            write(d.evolution, 524, 462); write(d.diag, 526, 374);
-            write("X", 523, 287); write("X", 524, 271);
-            write("TUNIS", 473, 90); write(d.date, 528, 91);
+            
+            write(d.atcd, 519, 507); 
+            write(d.motif, 520, 492);
+            write(d.evolution, 524, 462); 
+            write(d.diag, 526, 374);
+            
+            write("X", 523, 287); 
+            write("X", 524, 271);
+            write("TUNIS", 473, 90); 
+            write(d.date, 528, 91);
 
             download(await doc.save(), `PECDI_${d.nom}.pdf`, "application/pdf");
         } catch(e) { console.error("Erreur PECDI:", e); }
