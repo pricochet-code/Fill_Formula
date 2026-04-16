@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Expert Médical v6.1</title>
+    <title>Expert Médical v8.0</title>
     
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://unpkg.com/downloadjs@1.4.7/download.js"></script>
@@ -11,22 +11,39 @@
     <style>
         :root { --blue: #2c3e50; --accent: #2980b9; --orange: #e67e22; --bg: #f0f2f5; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--blue); margin: 0; padding: 10px; }
         .container { max-width: 950px; margin: auto; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        
         header { text-align: center; border-bottom: 3px solid var(--accent); margin-bottom: 20px; padding-bottom: 10px; }
+        h1 { margin: 0; font-size: 1.2rem; }
+
         fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 12px; margin-bottom: 15px; }
         legend { font-weight: bold; color: var(--accent); font-size: 0.75rem; text-transform: uppercase; padding: 0 8px; }
+
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .span-2 { grid-column: span 2; }
         @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .span-2 { grid-column: span 1; } }
+
         .field { display: flex; flex-direction: column; margin-bottom: 8px; }
         label { font-size: 0.7rem; font-weight: 700; margin-bottom: 4px; color: #555; }
-        input, select, textarea { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; width: 100%; text-transform: uppercase; }
+        
+        input, select, textarea { 
+            padding: 12px; border: 1px solid #ccc; border-radius: 6px; 
+            font-size: 16px; width: 100%; text-transform: uppercase;
+        }
+
         .check-row { display: flex; flex-wrap: wrap; gap: 10px; background: #f9f9f9; padding: 10px; border-radius: 6px; }
         .check-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; }
         .check-item input { width: 22px; height: 22px; }
+
         .action-panel { background: #fff3e0; border: 2px solid var(--orange); padding: 15px; border-radius: 12px; margin-top: 20px; }
-        .btn-gen { background: var(--orange); color: white; border: none; padding: 18px; font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; }
+        .btn-gen { 
+            background: var(--orange); color: white; border: none; padding: 18px; 
+            font-size: 1.1rem; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; 
+        }
+        .btn-gen:active { transform: scale(0.98); background: #d35400; }
+
         .doc-wrap { position: relative; }
         .doc-prefix { position: absolute; left: 12px; top: 12px; font-weight: bold; color: var(--accent); }
         .doc-input { padding-left: 45px !important; }
@@ -35,30 +52,27 @@
 <body>
 
 <div class="container">
-    <header><h1>Système de Gestion Médicale</h1></header>
+    <header><h1>Système de Prise en Charge Médicale</h1></header>
 
     <fieldset>
-        <legend>1. État Civil & Régime</legend>
+        <legend>1. Identification du Patient</legend>
         <div class="grid">
             <div class="field"><label>Nom</label><input type="text" id="nom"></div>
             <div class="field"><label>Prénom</label><input type="text" id="prenom"></div>
             <div class="field"><label>Âge</label><input type="number" id="age"></div>
-            <div class="field"><label>Genre</label><select id="genre"><option value="HOMME">HOMME</option><option value="FEMME">FEMME</option></select></div>
-            <div class="field"><label>Tél</label><input type="tel" id="tels"></div>
             <div class="field">
-                <label>Régime</label>
-                <select id="regime">
-                    <option value="MA">MA</option><option value="FM">FM</option>
-                    <option value="RM">RM</option><option value="SS">SS</option>
-                    <option value="CP">CP</option>
+                <label>Genre</label>
+                <select id="genre">
+                    <option value="HOMME">HOMME</option>
+                    <option value="FEMME">FEMME</option>
                 </select>
             </div>
-            <div class="field span-2"><label>Adresse</label><input type="text" id="adresse"></div>
+            <div class="field span-2"><label>Téléphones</label><input type="tel" id="tels"></div>
         </div>
     </fieldset>
 
     <fieldset>
-        <legend>2. Clinique & ATCD</legend>
+        <legend>2. Dossier Clinique</legend>
         <div class="grid">
             <div class="field span-2">
                 <label>Antécédents</label>
@@ -67,134 +81,127 @@
                     <label class="check-item"><input type="checkbox" id="atcd_hta"> HTA</label>
                 </div>
             </div>
-            <div class="field span-2"><label>Motif / Histoire / Évolution</label><textarea id="motif" rows="2"></textarea></div>
-            <div class="field span-2"><label>Examen Physique</label><textarea id="evolution" rows="2"></textarea></div>
+            <div class="field span-2"><label>Motif / Histoire (Évolution)</label><textarea id="motif" rows="2"></textarea></div>
+            <div class="field span-2"><label>Examen Physique</label><textarea id="examen" rows="2"></textarea></div>
             <div class="field span-2"><label>Diagnostic Retenu</label><input type="text" id="diag"></div>
         </div>
     </fieldset>
 
     <fieldset>
-        <legend>3. Examens & Intervention</legend>
+        <legend>3. Examens Radiologiques</legend>
         <div class="grid">
-            <div class="field"><label class="check-item"><input type="checkbox" id="check_tdm"> TDM (Région)</label><input type="text" id="tdm_reg"></div>
-            <div class="field"><label class="check-item"><input type="checkbox" id="check_irm"> IRM (Région)</label><input type="text" id="irm_reg"></div>
-            <div class="field span-2"><label>Intervention Prévue</label><textarea id="interv" rows="2"></textarea></div>
+            <div class="field">
+                <label class="check-item"><input type="checkbox" id="check_tdm"> TDM (Région)</label>
+                <input type="text" id="tdm_reg">
+            </div>
+            <div class="field">
+                <label class="check-item"><input type="checkbox" id="check_irm"> IRM (Région)</label>
+                <input type="text" id="irm_reg">
+            </div>
             <div class="field span-2">
                 <label>Médecin Responsable</label>
-                <div class="doc-wrap"><span class="doc-prefix">DR.</span><input type="text" id="medecin" class="doc-input"></div>
+                <div class="doc-wrap">
+                    <span class="doc-prefix">DR.</span>
+                    <input type="text" id="medecin" class="doc-input">
+                </div>
             </div>
         </div>
     </fieldset>
 
     <section class="action-panel">
         <div class="grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 15px;">
-            <label class="check-item"><input type="checkbox" id="checkPA" checked> PA</label>
-            <label class="check-item"><input type="checkbox" id="checkBPO"> BPO</label>
-            <label class="check-item"><input type="checkbox" id="checkDI"> DI</label>
-            <label class="check-item"><input type="checkbox" id="checkDR" checked> DR</label>
+            <label class="check-item"><input type="checkbox" id="checkPA"> PA</label>
+            <label class="check-item"><input type="checkbox" id="checkDR"> DR</label>
             <label class="check-item" style="color:red; font-weight:bold;"><input type="checkbox" id="checkPECDI" checked> PECDI</label>
         </div>
-        <button class="btn-gen" onclick="generer()">🚀 GÉNÉRER LES SÉLECTIONS</button>
+        <button class="btn-gen" onclick="generer()">🚀 GÉNÉRER LES DOCUMENTS</button>
     </section>
 </div>
 
 <script>
-    const { PDFDocument, degrees, StandardFonts } = PDFLib;
+    const { PDFDocument } = PDFLib;
     const getV = (id) => document.getElementById(id).value.trim().toUpperCase();
 
+    // Fonction pour charger les fichiers PDF locaux
     async function loadBuffer(file) {
-        const res = await fetch(file);
-        if (!res.ok) throw new Error(`Fichier ${file} manquant.`);
-        return await res.arrayBuffer();
+        const response = await fetch(file);
+        if (!response.ok) throw new Error(`Le fichier ${file} est manquant dans votre dossier.`);
+        return await response.arrayBuffer();
     }
 
     async function generer() {
         const d = {
-            nom: getV('nom'), prenom: getV('prenom'), age: getV('age'), genre: getV('genre'),
-            tels: getV('tels'), adresse: getV('adresse'), regime: getV('regime'),
-            motif: getV('motif'), evolution: getV('evolution'), diag: getV('diag'),
-            interv: getV('interv'), medecin: "DR. " + getV('medecin'),
+            nom: getV('nom'),
+            prenom: getV('prenom'),
+            age: getV('age'),
+            genre: getV('genre'),
+            tels: getV('tels'),
+            motif: getV('motif'),
+            examen: getV('examen'),
+            diag: getV('diag'),
+            medecin: "DR. " + getV('medecin'),
             date: new Date().toLocaleDateString('fr-FR'),
-            tdm: document.getElementById('check_tdm').checked, tdm_reg: getV('tdm_reg'),
-            irm: document.getElementById('check_irm').checked, irm_reg: getV('irm_reg'),
+            tdm: document.getElementById('check_tdm').checked,
+            tdm_reg: getV('tdm_reg'),
+            irm: document.getElementById('check_irm').checked,
+            irm_reg: getV('irm_reg'),
             atcd: (document.getElementById('atcd_diabete').checked ? "DIABETE " : "") + (document.getElementById('atcd_hta').checked ? "HTA" : "")
         };
 
         try {
             if(document.getElementById('checkPA').checked) await buildPA(d);
-            if(document.getElementById('checkBPO').checked) await buildBPO(d);
-            if(document.getElementById('checkDI').checked) await buildDI(d);
             if(document.getElementById('checkDR').checked) await buildDR(d);
             if(document.getElementById('checkPECDI').checked) await buildPECDI(d);
-        } catch (e) { alert("⚠️ " + e.message); }
+        } catch (e) {
+            alert("⚠️ " + e.message);
+        }
     }
 
-    // PECDI avec rotation anti-horaire (+90°)
+    // FORMULAIRE PECDI - PAGE 2 UNIQUEMENT - COORDONNÉES EXACTES
     async function buildPECDI(d) {
-        const doc = await PDFDocument.load(await loadBuffer('PECDI.pdf'));
-        const page = doc.getPages()[1]; 
-        const write = (t, x, y) => { 
-            if(t) page.drawText(t.toString(), { 
-                x, y, size: 11, 
-                rotate: degrees(90) // Rotation anti-horaire
-            }); 
-        };
+        const bytes = await loadBuffer('PECDI.pdf');
+        const doc = await PDFDocument.load(bytes);
+        const page = doc.getPages()[1]; // Deuxième page
         
+        const write = (t, x, y) => { if(t) page.drawText(t.toString(), { x, y, size: 10 }); };
+
+        // Vos repères fournis
         write(`${d.nom} ${d.prenom}`, 118, 420);
         if(d.tdm) write("X", 75, 322);
         if(d.irm) write(d.irm_reg, 146, 189);
-        write(d.genre, 146, 189); write(d.age, 636, 519);
-        write(d.atcd, 519, 507); write(d.motif, 520, 492);
-        write(d.evolution, 524, 462); write(d.diag, 526, 374);
-        write("X", 523, 287); write("X", 524, 271);
-        write("TUNIS", 473, 90); write(d.date, 528, 91);
         
-        download(await doc.save(), `PECDI_${d.nom}.pdf`, "application/pdf");
+        write(d.genre, 146, 189); 
+        write(d.age, 636, 519);
+        write(d.atcd, 519, 507);
+        write(d.motif, 520, 492); // Motif
+        write(d.motif, 520, 492); // Depuis evolution
+        write(d.examen, 524, 462); // Examen
+        write(d.diag, 526, 374);
+        
+        write("X", 523, 287); // Surveillance
+        write("X", 524, 271); // Chirurgie
+        write("TUNIS", 473, 90);
+        write(d.date, 528, 91);
+
+        const pdfBytes = await doc.save();
+        download(pdfBytes, `PECDI_${d.nom}.pdf`, "application/pdf");
     }
 
+    // FORMULAIRE PA (Exemple de base)
     async function buildPA(d) {
-        const doc = await PDFDocument.load(await loadBuffer('PA.pdf'));
+        const bytes = await loadBuffer('PA.pdf');
+        const doc = await PDFDocument.load(bytes);
         const page = doc.getPages()[0];
-        const write = (t, x, y) => { if(t) page.drawText(t.toString(), { x, y, size: 12 }); };
-        write(d.date, 441, 688); write(d.nom, 195, 624); write(d.prenom, 213, 593);
-        write(d.age, 195, 561); write(d.tels, 420, 561); 
-        const regX = { "MA": 218, "FM": 253, "RM": 293, "SS": 335, "CP": 372 };
-        if(regX[d.regime]) write("X", regX[d.regime], 495);
-        write(d.motif, 279, 465); write(d.diag, 160, 434);
-        write(d.medecin, 392, 129);
+        page.drawText(`${d.nom} ${d.prenom}`, { x: 195, y: 624, size: 12 });
         download(await doc.save(), `PA_${d.nom}.pdf`, "application/pdf");
     }
 
-    async function buildBPO(d) {
-        const doc = await PDFDocument.load(await loadBuffer('BPO.pdf'));
-        const page = doc.getPages()[0];
-        const f = await doc.embedFont(StandardFonts.Helvetica);
-        const write = (t, x, y) => { if(t) page.drawText(t, { x, y, size: 11, font: f }); };
-        [231, 484, 751].forEach(x => write(d.date, x, 470));
-        [70, 341, 615].forEach(x => write(`${d.prenom} ${d.nom}`, x, 295));
-        download(await doc.save(), `BPO_${d.nom}.pdf`, "application/pdf");
-    }
-
-    async function buildDI(d) {
-        const doc = await PDFDocument.load(await loadBuffer('DI.pdf'));
-        const page = doc.getPages()[0];
-        const write = (t, x, y) => { if(t) page.drawText(t.toString(), { x, y, size: 12 }); };
-        write(d.date, 465, 688); write(`${d.nom} ${d.prenom}`, 248, 597);
-        if(d.tdm) { write("X", 248, 597); write(d.tdm_reg, 318, 575); }
-        write(d.genre, 243, 458); write(d.age, 390, 458);
-        write(d.medecin, 402, 70);
-        download(await doc.save(), `DI_${d.nom}.pdf`, "application/pdf");
-    }
-
+    // FORMULAIRE DR (Exemple de base)
     async function buildDR(d) {
-        const doc = await PDFDocument.load(await loadBuffer('DR.pdf'));
+        const bytes = await loadBuffer('DR.pdf');
+        const doc = await PDFDocument.load(bytes);
         const page = doc.getPages()[0];
-        const write = (t, x, y) => { if(t) page.drawText(t.toString(), { x, y, size: 12 }); };
-        write(d.date, 464, 690); write(`${d.nom} ${d.prenom}`, 235, 601);
-        write(d.genre, 241, 538); write(d.age, 365, 541);
-        write(d.atcd, 223, 515); write(d.motif, 224, 490);
-        write(d.evolution, 225, 467); write(d.diag, 227, 443);
-        write("X", 172, 235); write(d.medecin, 420, 63);
+        page.drawText(`${d.nom} ${d.prenom}`, { x: 235, y: 601, size: 12 });
         download(await doc.save(), `DR_${d.nom}.pdf`, "application/pdf");
     }
 </script>
