@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Système de Gestion Chirurgicale</title>
+    <title>Système de Gestion Chirurgicale - Majuscules</title>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://unpkg.com/downloadjs@1.4.7/download.js"></script>
     <style>
         :root { --blue: #2980b9; --dark: #2c3e50; --green: #27ae60; --bg: #f5f6fa; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        
         h1 { text-align: center; color: var(--dark); border-bottom: 3px solid var(--blue); padding-bottom: 10px; margin-bottom: 30px; }
         
         .section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; padding: 20px; border: 1px solid #dee2e6; border-radius: 8px; background: #fff; }
@@ -20,16 +21,10 @@
         .half { grid-column: span 2; }
         
         label { font-size: 0.85em; margin-bottom: 4px; font-weight: 600; color: #444; }
-        input, textarea, select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; }
+        input, textarea, select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; text-transform: uppercase; }
         
         .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; margin-top: 5px; }
         .check-item { display: flex; align-items: center; font-size: 0.85em; gap: 5px; cursor: pointer; }
-
-        .form-selector { background: #e3f2fd; padding: 25px; border-radius: 8px; border-left: 6px solid var(--blue); margin-top: 20px; }
-        .doc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-        .signature-section { display: flex; justify-content: flex-end; margin-top: 20px; }
-        .signature-field { width: 300px; text-align: right; }
 
         .btn-box { text-align: center; margin-top: 30px; }
         .btn { background: var(--green); color: white; padding: 18px 60px; border: none; border-radius: 50px; font-size: 1.2em; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(39,174,96,0.3); }
@@ -39,7 +34,7 @@
 <body>
 
 <div class="container">
-    <h1>🏥 Dossier Chirurgical Numérique</h1>
+    <h1>🏥 Dossier Chirurgical Pro</h1>
 
     <div class="section">
         <div class="section-title">Identification du Patient</div>
@@ -55,10 +50,10 @@
                 <option value="RM">RM</option>
                 <option value="SS">SS</option>
                 <option value="CP">CP</option>
-                <option value="Autre">Autre</option>
+                <option value="Autre">AUTRE</option>
             </select>
         </div>
-        <div class="field"><label>Précision Régime (si autre)</label><input type="text" id="regime_autre"></div>
+        <div class="field"><label>Si Autre (Précisez)</label><input type="text" id="regime_autre"></div>
     </div>
 
     <div class="section">
@@ -67,185 +62,129 @@
             <label>Antécédents médicaux</label>
             <div class="checkbox-grid">
                 <label class="check-item"><input type="checkbox" class="atcd-check" value="HTA"> HTA</label>
-                <label class="check-item"><input type="checkbox" class="atcd-check" value="Diabète"> Diabète</label>
-                <label class="check-item"><input type="checkbox" class="atcd-check" value="AVC ischémique"> AVC ischémique</label>
+                <label class="check-item"><input type="checkbox" class="atcd-check" value="DIABETE"> DIABÈTE</label>
+                <label class="check-item"><input type="checkbox" class="atcd-check" value="AVC ISCHEMIQUE"> AVC ISCHÉMIQUE</label>
                 <label class="check-item"><input type="checkbox" class="atcd-check" value="IDM"> IDM</label>
-                <label class="check-item"><input type="checkbox" class="atcd-check" value="Coronarien"> Coronarien</label>
-                <label class="check-item"><input type="checkbox" class="atcd-check" value="Hypothyroidie"> Hypothyroïdie</label>
+                <label class="check-item"><input type="checkbox" class="atcd-check" value="CORONARIEN"> CORONARIEN</label>
+                <label class="check-item"><input type="checkbox" class="atcd-check" value="HYPOTHYROIDIE"> HYPOTHYROÏDIE</label>
             </div>
-            <input type="text" id="atcd_autre" placeholder="Autres antécédents..." style="margin-top:10px;">
+            <input type="text" id="atcd_autre" placeholder="AUTRES ANTECEDENTS..." style="margin-top:10px;">
         </div>
         <div class="field full"><label>Traitement en cours</label><textarea id="traitement_actuel" rows="2"></textarea></div>
     </div>
 
     <div class="section">
-        <div class="section-title">Clinique & Imagerie</div>
-        <div class="field"><label>Motif de consultation</label><textarea id="motif" rows="3"></textarea></div>
-        <div class="field half"><label>Évolution</label><textarea id="evolution" rows="3"></textarea></div>
-        <div class="field full"><label>Examen Physique</label><textarea id="examen" rows="2"></textarea></div>
-        <div class="field full">
-            <label>Imagerie</label>
-            <div style="display: flex; gap: 20px; align-items: center; background: #f8f9fa; padding: 10px; border-radius: 4px;">
-                <label class="check-item"><input type="checkbox" id="check_tdm"> TDM</label>
-                <label class="check-item"><input type="checkbox" id="check_irm"> IRM</label>
-                <input type="text" id="imagerie_details" placeholder="Détails imagerie..." style="flex-grow: 1;">
-            </div>
-        </div>
-        <div class="field half"><label>Diagnostic retenu</label><input type="text" id="diag"></div>
-    </div>
-
-    <div class="section">
-        <div class="section-title">Données Opératoires</div>
-        <div class="field full"><label>Intervention programmée</label><input type="text" id="interv_prog"></div>
-        <div class="field"><label>Opéré le</label><input type="date" id="date_op"></div>
+        <div class="section-title">Clinique & Intervention</div>
+        <div class="field full"><label>Motif de consultation</label><textarea id="motif" rows="2"></textarea></div>
+        <div class="field full"><label>Diagnostic retenu</label><textarea id="diag" rows="2"></textarea></div>
+        <div class="field full"><label>Intervention programmée</label><textarea id="interv" rows="2"></textarea></div>
         <div class="field"><label>Type d'admission</label>
-            <select id="urgence"><option value="a froid">A froid</option><option value="en urgence">En urgence</option></select>
-        </div>
-        <div class="field"><label>Position opératoire</label>
-            <select id="pos_op">
-                <option value="décubitus dorsal">Décubitus dorsal</option>
-                <option value="décubitus ventral">Décubitus ventral</option>
-                <option value="génu pectoral">Génu pectoral</option>
-                <option value="Park Bench">Park Bench</option>
-                <option value="latérale">Latérale</option>
-                <option value="Concorde">Concorde</option>
-                <option value="semi assise">Semi assise</option>
-                <option value="assise">Assise</option>
+            <select id="urgence">
+                <option value="a froid">A FROID</option>
+                <option value="en urgence">EN URGENCE</option>
             </select>
         </div>
-        <div class="field full">
-            <label>Estimation du saignement</label>
-            <div class="checkbox-grid" style="grid-template-columns: repeat(3, 1fr);">
-                <label class="check-item"><input type="radio" name="saignement" value="Minime"> Minime</label>
-                <label class="check-item"><input type="radio" name="saignement" value="Moyen"> Moyen</label>
-                <label class="check-item"><input type="radio" name="saignement" value="Important"> Important</label>
-            </div>
-        </div>
-        <div class="field full"><label>Résumé de l'intervention</label><textarea id="resume_interv" rows="3"></textarea></div>
-        <div class="field"><label>Suites opératoires</label><textarea id="suites" rows="3"></textarea></div>
-        <div class="field half"><label>Anatomopathologie</label><textarea id="anapath" rows="3"></textarea></div>
-        
-        <div class="full signature-section">
-            <div class="field signature-field">
-                <label>Nom du Médecin</label>
-                <input type="text" id="medecin" placeholder="Dr. ...">
-            </div>
-        </div>
-    </div>
-
-    <div class="form-selector">
-        <div class="section-title" style="color: #0d47a1;">Documents à produire</div>
-        <div class="doc-grid">
-            <label class="check-item"><input type="checkbox" id="check_adm" checked> Proposition d'admission (PA.pdf)</label>
-            <label class="check-item"><input type="checkbox" id="check_preop"> Bilan pré Op</label>
-            <label class="check-item"><input type="checkbox" id="check_ag"> Consultation pré AG</label>
-            <label class="check-item"><input type="checkbox" id="check_img"> Demande d'imagerie</label>
-            <label class="check-item"><input type="checkbox" id="check_reeduc"> Demande de rééducation</label>
-            <label class="check-item"><input type="checkbox" id="check_cr"> CR d'hospitalisation</label>
-            <label class="check-item"><input type="checkbox" id="check_trait"> Traitement Complémentaire</label>
+        <div class="field half">
+            <label>Nom du Médecin</label>
+            <input type="text" id="medecin" placeholder="DR. ...">
         </div>
     </div>
 
     <div class="btn-box">
-        <button class="btn" onclick="genererTousLesPDF()">Générer les documents</button>
+        <button class="btn" onclick="genererPA()">Générer Proposition d'Admission (PA)</button>
     </div>
 </div>
 
 <script>
     const { PDFDocument, rgb } = PDFLib;
 
-    // Fonction pour gérer le retour à la ligne automatique
-    function dessinerTexteLong(page, texte, x1, y1, x2, y2, height) {
+    // Fonction pour gérer les retours à la ligne et majuscules
+    function dessinerTexteFormaté(page, texte, x1, y1, x2, y2, height) {
         if (!texte) return;
+        const texteMaj = texte.toString().toUpperCase();
         const maxChar = 50; 
-        if (texte.length <= maxChar) {
-            page.drawText(texte, { x: x1, y: height - y1, size: 10 });
+        if (texteMaj.length <= maxChar) {
+            page.drawText(texteMaj, { x: x1, y: height - y1, size: 10 });
         } else {
-            const ligne1 = texte.substring(0, maxChar);
-            const ligne2 = texte.substring(maxChar);
+            const ligne1 = texteMaj.substring(0, maxChar);
+            const ligne2 = texteMaj.substring(maxChar, maxChar * 2);
             page.drawText(ligne1, { x: x1, y: height - y1, size: 10 });
             page.drawText(ligne2, { x: x2, y: height - y2, size: 10 });
         }
     }
 
-    async function genererTousLesPDF() {
-        const atcChecked = Array.from(document.querySelectorAll('.atcd-check:checked')).map(el => el.value).join(', ');
+    async function genererPA() {
+        // Collecte des données
+        const val = (id) => document.getElementById(id).value.trim().toUpperCase();
         
         const data = {
-            nom: document.getElementById('nom').value.toUpperCase(),
-            prenom: document.getElementById('prenom').value,
-            age: document.getElementById('age').value,
-            tel: document.getElementById('tel').value,
-            adresse: document.getElementById('adresse').value,
+            nom: val('nom'),
+            prenom: val('prenom'),
+            age: val('age'),
+            tel: val('tel'),
+            adresse: val('adresse'),
             regime: document.getElementById('regime').value,
-            regime_autre: document.getElementById('regime_autre').value,
-            atcd: atcChecked + (document.getElementById('atcd_autre').value ? ', ' + document.getElementById('atcd_autre').value : ''),
-            traitement: document.getElementById('traitement_actuel').value,
-            motif: document.getElementById('motif').value,
-            evolution: document.getElementById('evolution').value,
-            examen: document.getElementById('examen').value,
-            imagerie: (document.getElementById('check_tdm').checked ? 'TDM ' : '') + (document.getElementById('check_irm').checked ? 'IRM ' : '') + document.getElementById('imagerie_details').value,
-            diag: document.getElementById('diag').value,
-            interv: document.getElementById('interv_prog').value,
-            dateOp: document.getElementById('date_op').value,
+            regime_autre: val('regime_autre'),
+            motif: val('motif'),
+            diag: val('diag'),
+            interv: val('interv'),
             urgence: document.getElementById('urgence').value,
-            position: document.getElementById('pos_op').value,
-            saignement: document.querySelector('input[name="saignement"]:checked')?.value || "",
-            resume: document.getElementById('resume_interv').value,
-            suites: document.getElementById('suites').value,
-            anapath: document.getElementById('anapath').value,
-            medecin: document.getElementById('medecin').value,
-            dateJour: new Date().toLocaleDateString('fr-FR')
+            medecin: val('medecin'),
+            date: new Date().toLocaleDateString('fr-FR')
         };
 
-        // Logique pour PA.pdf (votre demande spécifique)
-        if (document.getElementById('check_adm').checked) {
-            await remplirPA(data);
-        }
-
-        // Pour les autres fichiers, vous ajouterez les blocs "if" ici après avoir trouvé leurs coordonnées.
-    }
-
-    async function remplirPA(data) {
         try {
-            const url = './Formulaires/PA.pdf';
-            const bytes = await fetch(url).then(res => res.arrayBuffer());
+            // Chargement du PDF à la racine
+            const url = 'PA.pdf'; 
+            const response = await fetch(url);
+            if(!response.ok) throw new Error("Fichier PA.pdf non trouvé à la racine du site.");
+            
+            const bytes = await response.arrayBuffer();
             const pdfDoc = await PDFDocument.load(bytes);
             const page = pdfDoc.getPages()[0];
             const { height } = page.getSize();
 
             const draw = (text, x, y, size = 10) => {
-                if(text) page.drawText(text.toString(), { x, y: height - y, size, color: rgb(0,0,0) });
+                if(text) page.drawText(text.toString().toUpperCase(), { x, y: height - y, size, color: rgb(0,0,0) });
             };
 
-            // MAPPING PRÉCIS SELON VOS COORDONNÉES
-            draw(data.dateJour, 441, 688);
+            // ÉCRITURE SUR LE PDF
+            draw(data.date, 441, 688);
             draw(data.nom, 195, 624);
             draw(data.prenom, 213, 593);
             draw(data.age, 195, 561);
             draw(data.tel, 420, 561);
             draw(data.adresse, 215, 530);
 
-            // Régime
+            // Gestion du Régime
             const regPos = { "M": 218, "FM": 253, "RM": 293, "SS": 335, "CP": 372 };
-            if (regPos[data.regime]) draw("X", regPos[data.regime], 495, 12);
-            else if (data.regime === "Autre") draw(data.regime_autre, 459, 498);
+            if (regPos[data.regime]) {
+                draw("X", regPos[data.regime], 495, 12);
+            } else if (data.regime === "Autre") {
+                draw(data.regime_autre, 459, 498);
+            }
 
-            // Textes avec retour à la ligne
-            dessinerTexteLong(page, data.motif, 279, 465, 160, 434, height);
-            dessinerTexteLong(page, data.diag, 259, 402, 160, 369, height);
-            dessinerTexteLong(page, data.interv, 301, 339, 160, 307, height);
+            // Textes longs (Motif, Diag, Interv)
+            dessinerTexteFormaté(page, data.motif, 279, 465, 160, 434, height);
+            dessinerTexteFormaté(page, data.diag, 259, 402, 160, 369, height);
+            dessinerTexteFormaté(page, data.interv, 301, 339, 160, 307, height);
 
             // Type Admission
-            if (data.urgence === "en urgence") draw("X", 352, 241, 12);
-            else draw("X", 447, 242, 12);
+            if (data.urgence === "en urgence") {
+                draw("X", 352, 241, 12);
+            } else {
+                draw("X", 447, 242, 12);
+            }
 
+            // Signature Médecin (en bas à droite)
             draw(data.medecin, 392, 129);
 
+            // Sauvegarde et téléchargement
             const result = await pdfDoc.save();
             download(result, `PA_${data.nom}.pdf`, "application/pdf");
+
         } catch (e) {
-            alert("Erreur sur ./Formulaires/PA.pdf. Assurez-vous du nom du fichier.");
+            alert("Erreur : " + e.message);
         }
     }
 </script>
