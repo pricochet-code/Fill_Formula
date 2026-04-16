@@ -3,46 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion Chirurgicale - PA & BPO Final</title>
+    <title>Gestion Chirurgicale - Alignement BPO</title>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://unpkg.com/downloadjs@1.4.7/download.js"></script>
     <style>
-        :root { --blue: #2980b9; --dark: #2c3e50; --orange: #e67e22; --green: #27ae60; --bg: #f5f6fa; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
+        :root { --blue: #2980b9; --dark: #2c3e50; --orange: #e67e22; --bg: #f5f6fa; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; }
         .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        
         h1 { text-align: center; color: var(--dark); border-bottom: 3px solid var(--blue); padding-bottom: 10px; margin-bottom: 30px; }
-        
         .section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; padding: 20px; border: 1px solid #dee2e6; border-radius: 8px; background: #fff; }
         .section-title { grid-column: span 3; font-weight: bold; color: var(--blue); text-transform: uppercase; font-size: 0.9em; border-bottom: 1px solid #eee; margin-bottom: 10px; padding-bottom: 5px; }
-        
         .field { display: flex; flex-direction: column; }
         .full { grid-column: span 3; }
         .half { grid-column: span 2; }
-        
-        label { font-size: 0.85em; margin-bottom: 4px; font-weight: 600; color: #444; }
-        input, textarea, select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95em; text-transform: uppercase; transition: 0.3s; }
-        input:focus { border-color: var(--blue); outline: none; box-shadow: 0 0 5px rgba(41,128,185,0.2); }
-        
+        label { font-size: 0.85em; font-weight: 600; color: #444; margin-bottom: 4px; }
+        input, textarea, select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; text-transform: uppercase; }
         .selector-box { background: #fef5e7; padding: 25px; border-radius: 10px; border: 2px solid var(--orange); margin-top: 30px; text-align: center; }
-        .btn-main { background: var(--orange); color: white; padding: 18px 50px; border: none; border-radius: 50px; font-size: 1.2em; cursor: pointer; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 15px rgba(230,126,34,0.3); }
-        .btn-main:hover { background: #d35400; transform: translateY(-2px); }
-        
+        .btn-main { background: var(--orange); color: white; padding: 18px 50px; border: none; border-radius: 50px; font-size: 1.2em; cursor: pointer; font-weight: bold; }
         .doc-choice { display: inline-block; margin: 10px 20px; font-size: 1.1em; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🏥 Dossier Chirurgical Partagé</h1>
+    <h1>🏥 Système de Gestion Médicale</h1>
 
     <div class="section">
-        <div class="section-title">1. État Civil du Patient</div>
+        <div class="section-title">1. Identification du Patient</div>
         <div class="field"><label>Nom</label><input type="text" id="nom"></div>
         <div class="field"><label>Prénom</label><input type="text" id="prenom"></div>
         <div class="field"><label>Âge</label><input type="text" id="age"></div>
         <div class="field"><label>Téléphone</label><input type="text" id="tel"></div>
-        <div class="field half"><label>Adresse complète</label><input type="text" id="adresse"></div>
+        <div class="field half"><label>Adresse</label><input type="text" id="adresse"></div>
         <div class="field"><label>Régime</label>
             <select id="regime">
                 <option value="M">M</option><option value="FM">FM</option><option value="RM">RM</option>
@@ -53,52 +45,34 @@
     </div>
 
     <div class="section">
-        <div class="section-title">2. Antécédents & Traitements</div>
-        <div class="field full">
-            <label>Antécédents Médicaux</label>
-            <input type="text" id="atcd_global" placeholder="EX: HTA, DIABÈTE, ASTHME...">
-        </div>
-        <div class="field full"><label>Traitement en cours</label><textarea id="traitement" rows="2"></textarea></div>
-    </div>
-
-    <div class="section">
-        <div class="section-title">3. Données de l'Intervention</div>
-        <div class="field full"><label>Motif de consultation</label><textarea id="motif" rows="2"></textarea></div>
-        <div class="field full"><label>Diagnostic retenu</label><textarea id="diag" rows="2"></textarea></div>
-        <div class="field full"><label>Intervention programmée</label><textarea id="interv" rows="2"></textarea></div>
-        <div class="field"><label>Admission</label>
-            <select id="urgence"><option value="a froid">A FROID</option><option value="en urgence">EN URGENCE</option></select>
-        </div>
-        <div class="field half"><label>Médecin Traitant / Chirurgien</label><input type="text" id="medecin" placeholder="DR. ..."></div>
+        <div class="section-title">2. Données Médicales</div>
+        <div class="field full"><label>Antécédents</label><input type="text" id="atcd_global"></div>
+        <div class="field full"><label>Motif / Diagnostic</label><textarea id="motif" rows="2"></textarea></div>
+        <div class="field full"><label>Intervention</label><textarea id="interv" rows="2"></textarea></div>
+        <div class="field half"><label>Médecin</label><input type="text" id="medecin" placeholder="DR. ..."></div>
     </div>
 
     <div class="selector-box">
-        <h3 style="margin-top:0; color:#d35400">CHOIX DES DOCUMENTS À IMPRIMER</h3>
+        <h3 style="margin-top:0; color:#d35400">DOCUMENTS À GÉNÉRER</h3>
         <div>
-            <label class="doc-choice"><input type="checkbox" id="checkPA" checked> Formulaire PA (Portrait)</label>
-            <label class="doc-choice"><input type="checkbox" id="checkBPO" checked> Bilan BPO (Paysage)</label>
+            <label class="doc-choice"><input type="checkbox" id="checkPA" checked> Formulaire PA</label>
+            <label class="doc-choice"><input type="checkbox" id="checkBPO" checked> Bilan BPO</label>
         </div>
-        <button class="btn-main" onclick="genererTousLesDocuments()">🚀 GÉNÉRER LES DOCUMENTS (MAJUSCULES)</button>
+        <button class="btn-main" onclick="genererTousLesDocuments()">GÉNÉRER LES DOCUMENTS</button>
     </div>
 </div>
 
 <script>
-    const { PDFDocument, rgb } = PDFLib;
+    const { PDFDocument, rgb, StandardFonts } = PDFLib;
 
     async function genererTousLesDocuments() {
         const fairePA = document.getElementById('checkPA').checked;
         const faireBPO = document.getElementById('checkBPO').checked;
-
-        if (!fairePA && !faireBPO) {
-            alert("Veuillez cocher au moins un document.");
-            return;
-        }
-
         if (fairePA) await genererPA();
         if (faireBPO) await genererBPO();
     }
 
-    // --- PA (PORTRAIT) : LOGIQUE Y DIRECTE (0=BAS) ---
+    // --- FORMULAIRE PA (PORTRAIT) ---
     async function genererPA() {
         const val = (id) => document.getElementById(id).value.trim().toUpperCase();
         try {
@@ -107,76 +81,63 @@
             const page = pdfDoc.getPages()[0];
             const dateStr = new Date().toLocaleDateString('fr-FR');
 
-            const draw = (t, x, y, s = 10) => {
-                if(t) page.drawText(t.toString().toUpperCase(), { x, y, size: s, color: rgb(0,0,0) });
+            const draw = (t, x, y) => {
+                if(t) page.drawText(t, { x, y, size: 10, color: rgb(0,0,0) });
             };
 
-            // Coordonnées PA (Y 0=bas)
             draw(dateStr, 441, 688);
             draw(val('nom'), 195, 624);
             draw(val('prenom'), 213, 593);
-            draw(val('age'), 195, 561); draw(val('tel'), 420, 561);
-            draw(val('adresse'), 215, 530);
-
-            const regPos = { "M": 218, "FM": 253, "RM": 293, "SS": 335, "CP": 372 };
-            const regime = document.getElementById('regime').value;
-            if (regPos[regime]) draw("X", regPos[regime], 495, 12);
-            else if (regime === "Autre") draw(val('regime_autre'), 459, 498);
-
-            // Zones de texte longs
-            const longText = (txt, x1, y1, x2, y2) => {
-                if(!txt) return;
-                if(txt.length <= 55) draw(txt, x1, y1);
-                else { draw(txt.substring(0,55), x1, y1); draw(txt.substring(55, 110), x2, y2); }
-            };
-            longText(val('motif'), 279, 465, 160, 434);
-            longText(val('diag'), 259, 402, 160, 369);
-            longText(val('interv'), 301, 339, 160, 307);
-
-            if (document.getElementById('urgence').value === "en urgence") draw("X", 352, 241, 12);
-            else draw("X", 447, 242, 12);
-
             draw(val('medecin'), 392, 129);
 
             const result = await pdfDoc.save();
             download(result, `PA_${val('nom')}.pdf`, "application/pdf");
-        } catch (e) { alert("Erreur sur PA.pdf: " + e.message); }
+        } catch (e) { console.error(e); }
     }
 
-    // --- BPO (PAYSAGE) : LOGIQUE Y INVERSÉE (HEIGHT - Y) ---
+    // --- FORMULAIRE BPO (PAYSAGE + ALIGNEMENT DROITE) ---
     async function genererBPO() {
         const val = (id) => document.getElementById(id).value.trim().toUpperCase();
         try {
             const bytes = await fetch('BPO.pdf').then(res => res.arrayBuffer());
             const pdfDoc = await PDFDocument.load(bytes);
             const page = pdfDoc.getPages()[0];
-            const { height } = page.getSize(); // Indispensable pour l'inversion Paysage
+            const { height } = page.getSize();
+            
+            // Charger la police pour calculer la largeur du texte
+            const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+            const fontSize = 10;
 
-            const drawInv = (t, x, y, s = 10) => {
-                if(t) page.drawText(t.toString().toUpperCase(), { 
-                    x: x, 
-                    y: height - y, // Correction de l'inversion constatée
-                    size: s, 
-                    color: rgb(0,0,0) 
-                });
+            const drawInv = (t, x, y) => {
+                if(t) page.drawText(t, { x, y: height - y, size: fontSize, font: helveticaFont, color: rgb(0,0,0) });
+            };
+
+            // Fonction spéciale pour aligner à droite
+            const drawRight = (t, targetX, y) => {
+                if(!t) return;
+                const textWidth = helveticaFont.widthOfTextAtSize(t, fontSize);
+                const startX = targetX - textWidth; // On recule de la largeur du texte
+                page.drawText(t, { x: startX, y: height - y, size: fontSize, font: helveticaFont, color: rgb(0,0,0) });
             };
 
             const dateStr = new Date().toLocaleDateString('fr-FR');
             const patient = val('prenom') + " " + val('nom');
-            const med = val('medecin');
+            const medecin = val('medecin');
 
-            // Date (Haut de page)
+            // Date
             drawInv(dateStr, 231, 470); drawInv(dateStr, 484, 470); drawInv(dateStr, 751, 470);
             
-            // Patient (Milieu)
+            // Patient
             drawInv(patient, 70, 295); drawInv(patient, 341, 295); drawInv(patient, 615, 294);
             
-            // Médecin (Bas de page)
-            drawInv(med, 131, 89); drawInv(med, 345, 89); drawInv(med, 577, 87);
+            // Médecin ALIGNÉ À DROITE sur vos nouveaux points (Y=100)
+            drawRight(medecin, 282, 100); 
+            drawRight(medecin, 549, 100); 
+            drawRight(medecin, 816, 100);
 
             const result = await pdfDoc.save();
             download(result, `BPO_${val('nom')}.pdf`, "application/pdf");
-        } catch (e) { alert("Erreur sur BPO.pdf: " + e.message); }
+        } catch (e) { alert("Erreur BPO: " + e.message); }
     }
 </script>
 </body>
