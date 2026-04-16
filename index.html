@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Système de Gestion Chirurgicale - Final</title>
+    <title>Système de Gestion Chirurgicale - Correction Axe Y</title>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://unpkg.com/downloadjs@1.4.7/download.js"></script>
     <style>
         :root { --blue: #2980b9; --dark: #2c3e50; --green: #27ae60; --bg: #f5f6fa; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); padding: 20px; margin: 0; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; }
         .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         h1 { text-align: center; color: var(--dark); border-bottom: 3px solid var(--blue); padding-bottom: 10px; margin-bottom: 30px; }
         
-        .section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; padding: 20px; border: 1px solid #dee2e6; border-radius: 8px; }
+        .section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; padding: 20px; border: 1px solid #dee2e6; border-radius: 8px; background: #fff; }
         .section-title { grid-column: span 3; font-weight: bold; color: var(--blue); text-transform: uppercase; font-size: 0.9em; border-bottom: 1px solid #eee; margin-bottom: 10px; padding-bottom: 5px; }
         
         .field { display: flex; flex-direction: column; }
@@ -21,7 +21,6 @@
         
         label { font-size: 0.85em; margin-bottom: 4px; font-weight: 600; color: #444; }
         input, textarea, select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; text-transform: uppercase; }
-        textarea { resize: vertical; min-height: 60px; }
         
         .btn-box { text-align: center; margin-top: 30px; }
         .btn { background: var(--green); color: white; padding: 18px 60px; border: none; border-radius: 50px; font-size: 1.2em; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(39,174,96,0.3); }
@@ -31,7 +30,7 @@
 <body>
 
 <div class="container">
-    <h1>🏥 Dossier Patient & Admission</h1>
+    <h1>🏥 Dossier Patient (Axe Y Standard PDF)</h1>
 
     <div class="section">
         <div class="section-title">Identification du Patient</div>
@@ -50,14 +49,14 @@
                 <option value="Autre">AUTRE</option>
             </select>
         </div>
-        <div class="field"><label>Précision Régime (si autre)</label><input type="text" id="regime_autre"></div>
+        <div class="field"><label>Si Autre</label><input type="text" id="regime_autre"></div>
     </div>
 
     <div class="section">
         <div class="section-title">Données Médicales</div>
-        <div class="field full"><label>Motif de consultation</label><textarea id="motif"></textarea></div>
-        <div class="field full"><label>Diagnostic retenu</label><textarea id="diag"></textarea></div>
-        <div class="field full"><label>Intervention programmée</label><textarea id="interv"></textarea></div>
+        <div class="field full"><label>Motif de consultation</label><textarea id="motif" rows="2"></textarea></div>
+        <div class="field full"><label>Diagnostic retenu</label><textarea id="diag" rows="2"></textarea></div>
+        <div class="field full"><label>Intervention programmée</label><textarea id="interv" rows="2"></textarea></div>
         <div class="field"><label>Type d'admission</label>
             <select id="urgence">
                 <option value="a froid">A FROID</option>
@@ -78,22 +77,19 @@
 <script>
     const { PDFDocument, rgb } = PDFLib;
 
-    /**
-     * Gère l'écriture de texte avec retour à la ligne automatique
-     * Utilise le système de coordonnées Top-Down (0 = Haut)
-     */
-    function dessinerTexteFormaté(page, texte, x1, y1, x2, y2, height) {
+    // Fonction pour les textes longs (Axe Y : 0 = Bas)
+    function dessinerTexteLong(page, texte, x1, y1, x2, y2) {
         if (!texte) return;
         const texteMaj = texte.toString().toUpperCase();
-        const maxChar = 50; 
+        const maxChar = 55; 
         
         if (texteMaj.length <= maxChar) {
-            page.drawText(texteMaj, { x: x1, y: height - y1, size: 10 });
+            page.drawText(texteMaj, { x: x1, y: y1, size: 10 });
         } else {
             const ligne1 = texteMaj.substring(0, maxChar);
             const ligne2 = texteMaj.substring(maxChar, maxChar * 2);
-            page.drawText(ligne1, { x: x1, y: height - y1, size: 10 });
-            page.drawText(ligne2, { x: x2, y: height - y2, size: 10 });
+            page.drawText(ligne1, { x: x1, y: y1, size: 10 });
+            page.drawText(ligne2, { x: x2, y: y2, size: 10 });
         }
     }
 
@@ -117,32 +113,30 @@
         };
 
         try {
-            // Tentative de récupération du fichier à la racine
+            // Le fichier doit être à la racine du dépôt GitHub
             const url = 'PA.pdf'; 
             const response = await fetch(url);
             
-            if(!response.ok) {
-                throw new Error("Le fichier 'PA.pdf' est introuvable. Assurez-vous qu'il est au même endroit que ce fichier HTML.");
-            }
+            if(!response.ok) throw new Error("Fichier PA.pdf non trouvé. Vérifiez qu'il est bien à côté de index.html.");
             
             const bytes = await response.arrayBuffer();
             const pdfDoc = await PDFDocument.load(bytes);
             const page = pdfDoc.getPages()[0];
-            const { height } = page.getSize();
 
-            // Fonction helper pour dessiner (Convertit l'axe Y pour vous)
+            // Fonction Helper (Y direct : 0 = BAS, 842 = HAUT)
             const draw = (text, x, y, size = 10) => {
                 if(text) {
                     page.drawText(text.toString().toUpperCase(), { 
                         x: x, 
-                        y: height - y, 
+                        y: y, 
                         size: size, 
                         color: rgb(0,0,0) 
                     });
                 }
             };
 
-            // Remplissage selon vos coordonnées (Y de haut en bas)
+            // Écriture selon vos coordonnées
+            // Haut de page
             draw(data.date, 441, 688);
             draw(data.nom, 195, 624);
             draw(data.prenom, 213, 593);
@@ -150,7 +144,7 @@
             draw(data.tel, 420, 561);
             draw(data.adresse, 215, 530);
 
-            // Gestion du Régime (Cases à cocher via X)
+            // Milieu de page (Régime)
             const regPos = { "M": 218, "FM": 253, "RM": 293, "SS": 335, "CP": 372 };
             if (regPos[data.regime]) {
                 draw("X", regPos[data.regime], 495, 12);
@@ -158,28 +152,26 @@
                 draw(data.regime_autre, 459, 498);
             }
 
-            // Zones de texte avec retour à la ligne (Logiciel Top-Down)
-            dessinerTexteFormaté(page, data.motif, 279, 465, 160, 434, height);
-            dessinerTexteFormaté(page, data.diag, 259, 402, 160, 369, height);
-            dessinerTexteFormaté(page, data.interv, 301, 339, 160, 307, height);
+            // Zones de texte (Motif, Diag, Interv)
+            dessinerTexteLong(page, data.motif, 279, 465, 160, 434);
+            dessinerTexteLong(page, data.diag, 259, 402, 160, 369);
+            dessinerTexteLong(page, data.interv, 301, 339, 160, 307);
 
-            // Type Admission (Urgence / Froid)
+            // Type Admission
             if (data.urgence === "en urgence") {
                 draw("X", 352, 241, 12);
             } else {
                 draw("X", 447, 242, 12);
             }
 
-            // Médecin (Signature)
+            // Bas de page (Signature Médecin)
             draw(data.medecin, 392, 129);
 
-            // Finalisation et téléchargement
             const result = await pdfDoc.save();
             download(result, `PA_${data.nom}.pdf`, "application/pdf");
 
         } catch (e) {
-            alert("Erreur technique : " + e.message);
-            console.error(e);
+            alert("Erreur : " + e.message);
         }
     }
 </script>
