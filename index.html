@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Système Médical - BPO Final Corrigé</title>
+    <title>Correction Finale BPO - Inversion des Pôles</title>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://unpkg.com/downloadjs@1.4.7/download.js"></script>
     <style>
@@ -11,55 +11,27 @@
         .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         h1 { text-align: center; color: var(--dark); border-bottom: 3px solid var(--blue); padding-bottom: 10px; margin-bottom: 30px; }
         .section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; padding: 20px; border: 1px solid #dee2e6; border-radius: 8px; }
-        .field { display: flex; flex-direction: column; }
-        .full { grid-column: span 3; }
-        label { font-size: 0.8em; font-weight: 600; color: #555; margin-bottom: 4px; }
-        input, textarea { padding: 10px; border: 1px solid #ccc; border-radius: 4px; text-transform: uppercase; }
-        .selector-box { background: #fff3e0; padding: 20px; border-radius: 10px; border: 2px solid var(--orange); text-align: center; margin-top: 20px; }
-        .btn-main { background: var(--orange); color: white; padding: 15px 40px; border: none; border-radius: 50px; font-size: 1.1em; cursor: pointer; font-weight: bold; }
+        input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; text-transform: uppercase; width: 100%; box-sizing: border-box; }
+        .btn-main { background: var(--orange); color: white; padding: 15px 40px; border: none; border-radius: 50px; font-size: 1.1em; cursor: pointer; font-weight: bold; width: 100%; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>🏥 Impression des Formulaires</h1>
+    <h1>🏥 Impression Dossier Médical</h1>
 
     <div class="section">
-        <div class="field"><label>Nom</label><input type="text" id="nom"></div>
-        <div class="field"><label>Prénom</label><input type="text" id="prenom"></div>
-        <div class="field"><label>Médecin</label><input type="text" id="medecin"></div>
+        <div><label>Nom</label><input type="text" id="nom"></div>
+        <div><label>Prénom</label><input type="text" id="prenom"></div>
+        <div><label>Médecin</label><input type="text" id="medecin"></div>
     </div>
 
-    <div class="selector-box">
-        <label><input type="checkbox" id="checkPA" checked> Formulaire PA</label>
-        <label style="margin-left:20px;"><input type="checkbox" id="checkBPO" checked> Bilan BPO</label>
-        <br><br>
-        <button class="btn-main" onclick="genererTous()">GÉNÉRER LES DOCUMENTS</button>
-    </div>
+    <button class="btn-main" onclick="genererBPO()">GÉNÉRER LE BILAN BPO</button>
 </div>
 
 <script>
     const { PDFDocument, rgb, StandardFonts } = PDFLib;
 
-    async function genererTous() {
-        if (document.getElementById('checkPA').checked) await genererPA();
-        if (document.getElementById('checkBPO').checked) await genererBPO();
-    }
-
-    // PA : Logique standard qui fonctionne pour vous
-    async function genererPA() {
-        const val = (id) => document.getElementById(id).value.trim().toUpperCase();
-        const bytes = await fetch('PA.pdf').then(res => res.arrayBuffer());
-        const pdfDoc = await PDFDocument.load(bytes);
-        const page = pdfDoc.getPages()[0];
-        page.drawText(new Date().toLocaleDateString('fr-FR'), { x: 441, y: 688, size: 10 });
-        page.drawText(val('nom'), { x: 195, y: 624, size: 10 });
-        page.drawText(val('medecin'), { x: 392, y: 129, size: 10 });
-        const result = await pdfDoc.save();
-        download(result, `PA_${val('nom')}.pdf`, "application/pdf");
-    }
-
-    // BPO : LOGIQUE INVERSÉE POUR FORCER LE PLACEMENT
     async function genererBPO() {
         const val = (id) => document.getElementById(id).value.trim().toUpperCase();
         try {
@@ -68,34 +40,36 @@
             const page = pdfDoc.getPages()[0];
             const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
             
+            const dateStr = new Date().toLocaleDateString('fr-FR');
             const medecin = val('medecin');
             const patient = val('prenom') + " " + val('nom');
-            const dateStr = new Date().toLocaleDateString('fr-FR');
 
-            // --- INVERSION FORCEE ---
-            // On donne une petite valeur à ce qui doit être en HAUT
-            // On donne une grande valeur à ce qui doit être en BAS
-            const Y_POUR_HAUT = 50;  
-            const Y_POUR_BAS = 500; 
+            // --- LA CORRECTION FINALE ---
+            // Puisque 500 montait et 50 descendait :
+            // On donne la valeur MAXIMALE (550) à la date pour qu'elle aille en haut.
+            // On donne la valeur MINIMALE (50) au médecin pour qu'il aille en bas.
+            const Y_HAUT = 550; 
+            const Y_MILIEU = 350;
+            const Y_BAS = 60; 
 
-            // 1. DATE (Doit être en haut)
-            page.drawText(dateStr, { x: 231, y: Y_POUR_HAUT, size: 10, font: font });
-            page.drawText(dateStr, { x: 484, y: Y_POUR_HAUT, size: 10, font: font });
-            page.drawText(dateStr, { x: 751, y: Y_POUR_HAUT, size: 10, font: font });
+            // 1. DATE (Tout en haut)
+            page.drawText(dateStr, { x: 231, y: Y_HAUT, size: 10, font: font });
+            page.drawText(dateStr, { x: 484, y: Y_HAUT, size: 10, font: font });
+            page.drawText(dateStr, { x: 751, y: Y_HAUT, size: 10, font: font });
 
             // 2. PATIENT (Milieu)
-            page.drawText(patient, { x: 70, y: 280, size: 10, font: font });
-            page.drawText(patient, { x: 341, y: 280, size: 10, font: font });
-            page.drawText(patient, { x: 615, y: 280, size: 10, font: font });
+            page.drawText(patient, { x: 70, y: Y_MILIEU, size: 10, font: font });
+            page.drawText(patient, { x: 341, y: Y_MILIEU, size: 10, font: font });
+            page.drawText(patient, { x: 615, y: Y_MILIEU, size: 10, font: font });
 
-            // 3. MÉDECIN (Doit être en bas + Alignement Droite)
+            // 3. MÉDECIN (Tout en bas + Alignement Droite)
             if(medecin) {
                 const textWidth = font.widthOfTextAtSize(medecin, 10);
                 const pointsX = [282, 549, 816];
                 pointsX.forEach(x => {
                     page.drawText(medecin, {
                         x: x - textWidth, 
-                        y: Y_POUR_BAS, 
+                        y: Y_BAS, 
                         size: 10,
                         font: font
                     });
